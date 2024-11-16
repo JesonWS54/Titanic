@@ -19,23 +19,23 @@ def crud_menu(filepath):
         choice = input("Chọn một tùy chọn: ")
 
         if choice == '1':
-            crud.create_entry(data)
+            data = crud.create_entry(data)
             utils.save_data(data, filepath) 
             print("Đã thêm hành khách mới.")
         
         elif choice == '2':
             passenger_id = int(input("Nhập ID hành khách: "))
-            crud.read_entry(data, passenger_id)
+            data = crud.read_entry(data, passenger_id)
         
         elif choice == '3':
             passenger_id = int(input("Nhập ID hành khách: "))
-            crud.update_entry(data, passenger_id)
+            data = crud.update_entry(data, passenger_id)
             utils.save_data(data, filepath)  
             print("Đã cập nhật thông tin hành khách.")
         
         elif choice == '4':
             passenger_id = int(input("Nhập ID hành khách: "))
-            crud.delete_entry(data, passenger_id)
+            data = crud.delete_entry(data, passenger_id)
             utils.save_data(data, filepath)  
             print("Đã xóa hành khách.")
         
