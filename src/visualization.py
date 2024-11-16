@@ -2,15 +2,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+file_path = 'Titanic.csv'
+titanic_data = pd.read_csv(file_path)
 def visualization:
-
-    file_path = 'Titanic.csv'
-    titanic_data = pd.read_csv(file_path)
-
-
     # Set visual style
     sns.set(style="whitegrid")
-
     # Biểu đồ phân phối tuổi (Histogram)
     plt.figure(figsize=(10, 6))
     sns.histplot(titanic_data['Age'], bins=30, kde=True, color='blue', edgecolor='black')
