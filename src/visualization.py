@@ -13,8 +13,6 @@ def visualization:
     plt.title('Distribution of Passenger Age', fontsize=16, fontweight = 'bold')
     plt.xlabel('Age', fontsize=14)
     plt.ylabel('Count', fontsize=14)
-    plt.xlim([0,80])
-    plt.ylim([0,80])
     plt.show()
 
     # Biểu đồ tỷ lệ sống sót theo giới tính (Bar Chart)
