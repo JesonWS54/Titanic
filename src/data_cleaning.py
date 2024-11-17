@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-def fill_mising_age(titanic_data):
+def fill_missing_Age(titanic_data):
     """Fills in missing age values based on the average age of each passenger class (Pclass).
 
     Args:
@@ -77,7 +77,7 @@ def clean_data(titanic_data):
     Returns:
       Cleaned DataFrame.
     """
-    fill_mising_age(titanic_data)
+    fill_missing_Age(titanic_data)
     fill_missing_Embarked(titanic_data)
     fill_missing_Cabin(titanic_data)
     fix_wrong_value_Fare(titanic_data)
