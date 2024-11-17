@@ -81,6 +81,7 @@ def clean_data(titanic_data):
     fill_missing_Embarked(titanic_data)
     fill_missing_Cabin(titanic_data)
     fix_wrong_value_Fare(titanic_data)
+    normalize_parentheses_to_quotes(titanic_data)
     return titanic_data
 def missing_values(titanic_data):
     """Prints the number of missing values for each column in the Titanic DataFrame.
