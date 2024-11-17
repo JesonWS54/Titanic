@@ -55,6 +55,19 @@ def fix_wrong_value_Fare(titanic_data):
         )
     )
     return titanic_data['Fare']
+def normalize_parentheses_to_quotes(titanic_data):
+    """
+    Replace parentheses with quotes in the 'Name' column of a DataFrame.
+
+    Args:
+        titanic_data (pd.DataFrame): A DataFrame containing a 'Name' column.
+
+    Modifies:
+        Replacing '(' and ')' with '"', and cleaning redundant patterns like '("' or '")'.
+    """
+    titanic_data['Name'] = titanic_data['Name'].apply(lambda name: name.replace('(', '"').
+                                                      replace(')', '"').replace('("','"').replace('")','"'))
+
 def clean_data(titanic_data):
     """Performs data cleaning steps for the Titanic DataFrame.
 
