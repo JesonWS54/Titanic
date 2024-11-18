@@ -27,7 +27,7 @@ def visualize_data():
         sns.barplot(x=survival_by_gender.index, y=survival_by_gender.values, palette='viridis')
         plt.title('Survival Rate by Gender', fontsize=16, fontweight = 'bold')
         plt.xlabel('Gender', fontsize=14)
-        plt.ylabel('Survival Rate (%)', fontsize=14)
+        plt.ylabel('Survival Rate ', fontsize=14)
         plt.ylim([0,1])
         plt.show()
 
@@ -38,7 +38,7 @@ def visualize_data():
         sns.barplot(x = survival_by_pclass.index, y = survival_by_pclass.values, palette = 'muted')
         plt.title('Survival Rate by Ticket Class', fontsize = 16, fontweight = 'bold')
         plt.xlabel('Ticket Class', fontsize=14)
-        plt.ylabel('Survival Rate (%)', fontsize=14)
+        plt.ylabel('Survival Rate ', fontsize=14)
         plt.ylim([0,1])
         plt.show()
     while True:
