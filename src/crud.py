@@ -67,8 +67,8 @@ def update_entry(data, passenger_id):
                       Nếu PassengerId không tồn tại, trả về thông báo lỗi.
     """
 
-    data_to_update = data[data["PassengerID"].isin(deleted_passenger_ids) == False]
-    if passenger_id not in data_to_update["PassengerID"].values:
+    data_to_update = data[data["PassengerId"].isin(deleted_passenger_ids) == False]
+    if passenger_id not in data_to_update["PassengerId"].values:
         print(f"Hành khách với ID {passenger_id} không tồn tại.")
         return data
     
