@@ -26,7 +26,7 @@ def crud_menu(filepath):
         
         elif choice == '2':
             passenger_id = int(input("Nhập ID hành khách: "))
-            data = crud.read_entry(data, passenger_id)
+            crud.read_entry(data, passenger_id)
         
         elif choice == '3':
             passenger_id = int(input("Nhập ID hành khách: "))
