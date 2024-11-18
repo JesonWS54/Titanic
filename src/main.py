@@ -61,7 +61,7 @@ def main():
             crud_menu(filepath)  
         elif choice == '2':
             titanic_data_clean=data_cleaning.clean_data(titanic_data)  
-            titanic_data.to_csv('data/titanic_data_clean.csv', index=False, encoding='utf-8')
+            titanic_data_clean.to_csv('data/titanic_data_clean.csv', index=False, encoding='utf-8')
         elif choice == '3':
             visualization.visualize_data()  
         elif choice == '4':
