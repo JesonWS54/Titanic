@@ -103,7 +103,7 @@ def delete_entry(data, passenger_id):
                       Nếu PassengerId không tồn tại, trả về thông báo lỗi.
     """
     
-     if passenger_id in data["PassengerId"].values:
+    if passenger_id in data["PassengerId"].values:
         if passenger_id in deleted_passenger_ids:
             print(f"Hành khách với ID {passenger_id} đã bị xóa trước đó.")
             return data
