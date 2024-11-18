@@ -20,7 +20,7 @@ def crud_menu(filepath):
         choice = input("Chọn một tùy chọn: ")
 
         if choice == '1':
-             new_data, success = crud.create_entry(data)
+            new_data, success = crud.create_entry(data)
             if success:
                 data = new_data
                 utils.save_data(data,filepath)
@@ -29,7 +29,7 @@ def crud_menu(filepath):
                 print("Không thể thêm hành khách. Vui lòng kiểm tra lại nhập liệu.")
         
         elif choice == '2':
-            ry:
+            try:
                 passenger_id = int(input("Nhập ID hành khách: "))
                 crud.read_entry(data, passenger_id)
             except ValueError:
