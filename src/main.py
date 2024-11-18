@@ -20,25 +20,40 @@ def crud_menu(filepath):
         choice = input("Chọn một tùy chọn: ")
 
         if choice == '1':
-            data = crud.create_entry(data)
-            utils.save_data(data, filepath) 
-            print("Đã thêm hành khách mới.")
+             new_data, success = crud.create_entry(data)
+            if success:
+                data = new_data
+                utils.save_data(data,filepath)
+                print("Đã thêm hành khách mới.")
+            else:
+                print("Không thể thêm hành khách. Vui lòng kiểm tra lại nhập liệu.")
         
         elif choice == '2':
-            passenger_id = int(input("Nhập ID hành khách: "))
-            crud.read_entry(data, passenger_id)
+            ry:
+                passenger_id = int(input("Nhập ID hành khách: "))
+                crud.read_entry(data, passenger_id)
+            except ValueError:
+                print("ID hành khách phải là một số nguyên.")
         
         elif choice == '3':
-            passenger_id = int(input("Nhập ID hành khách: "))
-            data = crud.update_entry(data, passenger_id)
-            utils.save_data(data, filepath)  
-            print("Đã cập nhật thông tin hành khách.")
+            try:
+                passenger_id = int(input("Nhập ID hành khách: "))
+                data = crud.update_entry(data, passenger_id) 
+            except ValueError:
+                print("ID hành khách phải là một số nguyên.")
         
         elif choice == '4':
-            passenger_id = int(input("Nhập ID hành khách: "))
-            data = crud.delete_entry(data, passenger_id)
-            utils.save_data(data, filepath)  
-            print("Đã xóa hành khách.")
+            try:
+                passenger_id = int(input("Nhập ID hành khách: "))
+                if passenger_id not in data["PassengerId"].values:
+                    print(f"Lỗi: Hành khách với ID {passenger_id} không tồn tại.")
+                else:
+                    new_data = crud.delete_entry(data, passenger_id)
+                    if new_data is not data:  
+                        data = new_data
+                        crud.save_data(data, filepath)
+            except ValueError:
+                print("Lỗi: ID hành khách phải là một số nguyên.")
         
         elif choice == '5':
             print("Quay lại menu chính.")
