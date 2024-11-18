@@ -1,4 +1,5 @@
 import pandas as pd
+deleted_passenger_ids = []
 def create_entry(data):
     """
     Thêm một hành khách mới vào DataFrame hiện tại.
@@ -26,10 +27,11 @@ def create_entry(data):
             "Embarked": input("Embarked (C, Q, S): ")
         }
         new_row = pd.DataFrame([new_entry])
-        return pd.concat([data, new_row], ignore_index=True)
+        print("Đã thêm hành khách mới.")
+        return pd.concat([data, new_row], ignore_index=True), True
     
     except ValueError as e:
-        print("Lỗi nhập liệu:", e)
+        print("Lỗi nhập liệu:", e), False
         return data
 
 def read_entry(data, passenger_id):
@@ -44,7 +46,8 @@ def read_entry(data, passenger_id):
         None: In thông tin hành khách nếu tồn tại,
               in thông báo nếu hành khách không tồn tại.
     """
-    result = data[data["PassengerId"] == passenger_id]
+    data_to_show = data[data["PassengerId"].isin(deleted_passenger_ids) == False]
+    result = data_to_show[data_to_show["PassengerId"] == passenger_id]
     if not result.empty:
         print(result)  
     else:
@@ -64,8 +67,10 @@ def update_entry(data, passenger_id):
                       Nếu PassengerId không tồn tại, trả về thông báo lỗi.
     """
 
-    if passenger_id not in data["PassengerId"].values:
-        return "Hành khách không tồn tại."
+    data_to_update = data[data["PassengerID"].isin(deleted_passenger_ids) == False]
+    if passenger_id not in data_to_update["PassengerID"].values:
+        print(f"Hành khách với ID {passenger_id} không tồn tại.")
+        return data
     
     print("Nhập thông tin cần cập nhật (bỏ qua nếu không muốn cập nhật):")
     for column in data.columns:
@@ -80,6 +85,7 @@ def update_entry(data, passenger_id):
                     data.loc[data["PassengerId"] == passenger_id, column] = float(new_value)
                 else:
                     data.loc[data["PassengerId"] == passenger_id, column] = new_value
+                print("Đã cập nhật thông tin hành khách.")
             except ValueError as e:
                 print(f"Lỗi khi cập nhật {column}: {e}")
     return data
@@ -97,10 +103,16 @@ def delete_entry(data, passenger_id):
                       Nếu PassengerId không tồn tại, trả về thông báo lỗi.
     """
     
-    if passenger_id in data["PassengerId"].values:
-        return data[data["PassengerId"] != passenger_id].reset_index(drop=True)
+     if passenger_id in data["PassengerId"].values:
+        if passenger_id in deleted_passenger_ids:
+            print(f"Hành khách với ID {passenger_id} đã bị xóa trước đó.")
+            return data
+        deleted_passenger_ids.append(passenger_id)
+        print(f"Hành khách với ID {passenger_id} đã được xóa.")
     else:
-        return "Hành khách không tồn tại."
+        print(f"Hành khách với ID {passenger_id} không tồn tại.")
+
+    return data
 
 
 
