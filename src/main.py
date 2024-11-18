@@ -59,7 +59,7 @@ def main():
         if choice == '1':
             crud_menu(filepath)  
         elif choice == '2':
-            data_cleaning.clean_data()  
+            data_cleaning.clean_data(filepath)  
         elif choice == '3':
             visualization.visualize_data()  
         elif choice == '4':
