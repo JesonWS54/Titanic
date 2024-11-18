@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-file_path = 'Titanic.csv'
+file_path = 'data/Titanic.csv'
 titanic_data = pd.read_csv(file_path)
     # Set visual style
 sns.set(style="whitegrid")
@@ -42,16 +42,16 @@ def visualize_data():
         plt.ylim([0,1])
         plt.show()
     while True:
-        print("Nhap vao bieu do muon hien thi:")
-        print("0: Ket thuc! ")
-        print("1: Bieu do phan phoi tuoi ")
-        print("2: Bieu do ty le song sot theo gioi tinh")
-        print("3: Bieu do ty le song sot theo tang lop ve")
-        choose = int(input("Nhap vao bieu do muon hien thi:" ))
+        print("Nhập vào biểu đồ bạn muốn hiển thị:")
+        print("0: Kết thúc! ")
+        print("1: Biểu đồ phân phối tuổi ")
+        print("2: Biểu đồ tỷ lệ sống sót theo giới tính")
+        print("3: Biểu đồ tỷ lệ sống sót theo vé")
+        choose = int(input("Nhập vào biểu đồ muốn hiển thị:" ))
         while choose < 0 or choose > 3:
-            choose = int(input("Nhap lai lua chon hop le: "))
+            choose = int(input("Lựa chọn chưa hợp lệ, hãy nhập lại: "))
         if choose == 0:
-            print("Tam biet!")
+            print("Tạm biệt")
             break
         elif choose == 1:
             Histogram()
