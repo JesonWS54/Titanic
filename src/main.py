@@ -5,6 +5,7 @@ import utils
 
 import pandas as pd
 filepath = "data/Titanic.csv"
+titanic_data=pd.read_csv(filepath)
 def crud_menu(filepath):
     data = utils.load_data(filepath)
 
@@ -59,7 +60,8 @@ def main():
         if choice == '1':
             crud_menu(filepath)  
         elif choice == '2':
-            data_cleaning.clean_data(filepath)  
+            titanic_data_clean=data_cleaning.clean_data(titanic_data) 
+            titanic_data_clean.to_csv('data/titanic_data_clean.csv', index=False, encoding='utf-8') 
         elif choice == '3':
             visualization.visualize_data()  
         elif choice == '4':
