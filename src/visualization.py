@@ -23,23 +23,23 @@ def visualize_data():
         
     def Barchartsurvival():
         plt.figure(figsize=(8, 6))
-        survival_by_gender = titanic_data.groupby('Sex')['Survived'].mean()
+        survival_by_gender = titanic_data.groupby('Sex')['Survived'].mean() * 100
         sns.barplot(x=survival_by_gender.index, y=survival_by_gender.values, palette='viridis')
-        plt.title('Survival Rate by Gender', fontsize=16, fontweight = 'bold')
+        plt.title('Survival Rate by Gender(%)', fontsize=16, fontweight = 'bold')
         plt.xlabel('Gender', fontsize=14)
-        plt.ylabel('Survival Rate ', fontsize=14)
-        plt.ylim([0,1])
+        plt.ylabel('Survival Rate(%) ', fontsize=14)
+        plt.ylim([0, 100])
         plt.show()
 
         # Biểu đồ tỷ lệ sống sót theo tầng lớp vé (Bar Chart)
     def Barchartticket():
         plt.figure(figsize=(8, 6))
-        survival_by_pclass = titanic_data.groupby('Pclass')['Survived'].mean()
+        survival_by_pclass = titanic_data.groupby('Pclass')['Survived'].mean() * 100
         sns.barplot(x = survival_by_pclass.index, y = survival_by_pclass.values, palette = 'muted')
         plt.title('Survival Rate by Ticket Class', fontsize = 16, fontweight = 'bold')
         plt.xlabel('Ticket Class', fontsize=14)
-        plt.ylabel('Survival Rate ', fontsize=14)
-        plt.ylim([0,1])
+        plt.ylabel('Survival Rate(%) ', fontsize=14)
+        plt.ylim([0, 100])
         plt.show()
     while True:
         print("Nhập vào biểu đồ bạn muốn hiển thị:")
