@@ -43,15 +43,17 @@ def read_entry(data, passenger_id):
         passenger_id (int): ID của hành khách cần tìm.
 
     Returns:
-        None: In thông tin hành khách nếu tồn tại,
-              in thông báo nếu hành khách không tồn tại.
+        dict: Dictionary chứa thông tin hành khách nếu tìm thấy.
+              None nếu không tìm thấy hành khách hoặc đã bị xóa.
     """
-    data_to_show = data[data["PassengerId"].isin(deleted_passenger_ids) == False]
-    result = data_to_show[data_to_show["PassengerId"] == passenger_id]
+    if passenger_id in deleted_passenger_ids:
+        return None  
+    result = data[data["PassengerId"] == passenger_id]
     if not result.empty:
-        print(result)  
+        return result.iloc[0].to_dict()
     else:
-        print("Hành khách không tồn tại.")  
+        return None
+  
 
 
 def update_entry(data, passenger_id):
