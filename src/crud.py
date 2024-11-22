@@ -52,7 +52,7 @@ def read_entry(data, passenger_id):
     if not result.empty:
         return result.iloc[0].to_dict()
     else:
-        return None  
+        print("Hành khách không tồn tại.")  
 
 
 def update_entry(data, passenger_id):
