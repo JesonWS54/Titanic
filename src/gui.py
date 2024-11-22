@@ -1,14 +1,28 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
-import utils
-import crud
-import data_cleaning
-import visualization
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Đường dẫn tới file CSV
-filepath = "data/Titanic.csv"
-data = utils.load_data(filepath)  # Giữ trạng thái dữ liệu chung
+FILEPATH = "data/Titanic.csv"
+
+# Load dữ liệu
+def load_data(filepath):
+    try:
+        return pd.read_csv(filepath)
+    except Exception as e:
+        messagebox.showerror("Lỗi", f"Không thể tải dữ liệu: {e}")
+        return pd.DataFrame()
+
+data = load_data(FILEPATH)
+
+# Lưu dữ liệu
+def save_data(data, filepath):
+    try:
+        data.to_csv(filepath, index=False)
+    except Exception as e:
+        messagebox.showerror("Lỗi", f"Không thể lưu dữ liệu: {e}")
 
 # Hiển thị dữ liệu với phân trang
 def display_data():
@@ -17,8 +31,26 @@ def display_data():
     data_window.title("Hiển thị dữ liệu")
     data_window.geometry("800x600")
 
-    tree = ttk.Treeview(data_window, columns=list(data.columns), show="headings")
-    tree.pack(fill=tk.BOTH, expand=True)
+    # Frame chứa Treeview và Scrollbars
+    frame = ttk.Frame(data_window)
+    frame.pack(fill=tk.BOTH, expand=True)
+
+    scrollbar_y = ttk.Scrollbar(frame, orient=tk.VERTICAL)
+    scrollbar_x = ttk.Scrollbar(frame, orient=tk.HORIZONTAL)
+
+    tree = ttk.Treeview(
+        frame, columns=list(data.columns), show="headings",
+        yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set
+    )
+    scrollbar_y.config(command=tree.yview)
+    scrollbar_x.config(command=tree.xview)
+
+    tree.grid(row=0, column=0, sticky='nsew')
+    scrollbar_y.grid(row=0, column=1, sticky='ns')
+    scrollbar_x.grid(row=1, column=0, sticky='ew')
+
+    frame.rowconfigure(0, weight=1)
+    frame.columnconfigure(0, weight=1)
 
     for col in data.columns:
         tree.heading(col, text=col)
@@ -61,30 +93,40 @@ def crud_interface():
     global data
 
     def add_entry():
-        crud.create_entry(data)
-        utils.save_data(data, filepath)
+        new_row = {col: simpledialog.askstring("Thêm dữ liệu", f"Nhập {col}:") for col in data.columns}
+        data.loc[len(data)] = new_row
+        save_data(data, FILEPATH)
         messagebox.showinfo("Thông báo", "Đã thêm hành khách mới.")
 
     def read_entry():
         passenger_id = simpledialog.askinteger("Đọc dữ liệu", "Nhập Passenger ID:")
-        result = crud.read_entry(data, passenger_id)
-        if result is not None:
-            info = "\n".join([f"{col}: {val}" for col, val in result.items()])
+        result = data[data["PassengerId"] == passenger_id]
+        if not result.empty:
+            info = "\n".join([f"{col}: {result.iloc[0][col]}" for col in result.columns])
             messagebox.showinfo("Thông tin hành khách", info)
         else:
             messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
 
     def update_entry():
         passenger_id = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập Passenger ID:")
-        crud.update_entry(data, passenger_id)
-        utils.save_data(data, filepath)
-        messagebox.showinfo("Thông báo", "Đã cập nhật thông tin hành khách.")
+        if passenger_id in data["PassengerId"].values:
+            for col in data.columns:
+                new_value = simpledialog.askstring("Cập nhật dữ liệu", f"Nhập {col} (bỏ qua để giữ nguyên):")
+                if new_value:
+                    data.loc[data["PassengerId"] == passenger_id, col] = new_value
+            save_data(data, FILEPATH)
+            messagebox.showinfo("Thông báo", "Đã cập nhật thông tin hành khách.")
+        else:
+            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
 
     def delete_entry():
         passenger_id = simpledialog.askinteger("Xóa dữ liệu", "Nhập Passenger ID:")
-        crud.delete_entry(data, passenger_id)
-        utils.save_data(data, filepath)
-        messagebox.showinfo("Thông báo", "Đã xóa hành khách.")
+        if passenger_id in data["PassengerId"].values:
+            data.drop(data[data["PassengerId"] == passenger_id].index, inplace=True)
+            save_data(data, FILEPATH)
+            messagebox.showinfo("Thông báo", "Đã xóa hành khách.")
+        else:
+            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
 
     crud_window = tk.Toplevel()
     crud_window.title("Chức năng CRUD")
@@ -98,14 +140,37 @@ def crud_interface():
 # Làm sạch dữ liệu
 def clean_data_interface():
     global data
-    data = data_cleaning.clean_data(data)
-    utils.save_data(data, filepath)
+    data.dropna(inplace=True)
+    save_data(data, FILEPATH)
     messagebox.showinfo("Thông báo", "Dữ liệu đã được làm sạch.")
 
 # Trực quan hóa dữ liệu
 def visualize_data_interface():
     global data
-    visualization.visualize_data()
+
+    def histogram():
+        plt.figure(figsize=(10, 6))
+        sns.histplot(data['Age'], bins=30, kde=True, color='blue', edgecolor='black')
+        plt.title('Distribution of Passenger Age', fontsize=16, fontweight='bold')
+        plt.xlabel('Age', fontsize=14)
+        plt.ylabel('Count', fontsize=14)
+        plt.show()
+
+    def bar_chart_survival():
+        plt.figure(figsize=(8, 6))
+        survival_by_gender = data.groupby('Sex')['Survived'].mean() * 100
+        sns.barplot(x=survival_by_gender.index, y=survival_by_gender.values, palette='viridis')
+        plt.title('Survival Rate by Gender (%)', fontsize=16, fontweight='bold')
+        plt.xlabel('Gender', fontsize=14)
+        plt.ylabel('Survival Rate (%)', fontsize=14)
+        plt.show()
+
+    viz_window = tk.Toplevel()
+    viz_window.title("Trực quan hóa dữ liệu")
+    viz_window.geometry("400x300")
+
+    ttk.Button(viz_window, text="Biểu đồ phân phối tuổi", command=histogram).pack(pady=10)
+    ttk.Button(viz_window, text="Tỷ lệ sống sót theo giới tính", command=bar_chart_survival).pack(pady=10)
 
 # Giao diện chính
 def main_gui():

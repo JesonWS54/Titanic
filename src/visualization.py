@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
 
 file_path = 'data/Titanic.csv'
 titanic_data = pd.read_csv(file_path)
