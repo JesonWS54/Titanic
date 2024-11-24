@@ -184,7 +184,7 @@ def update():
             messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
             return
         survival = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Survival (CANCE nếu không thay đổi):")
-        pclass = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCE nếu không thay đổi):")
+        pclass = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Pclass (CANCE nếu không thay đổi):")
         name = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Name (CANCE nếu không thay đổi):")
         sex = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCE nếu không thay đổi):")
         age = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Age (CANCE nếu không thay đổi):")
