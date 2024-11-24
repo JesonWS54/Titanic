@@ -19,7 +19,7 @@ def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, pa
     """
     Thêm một hành khách mới vào DataFrame hiện tại.
 
-    rgs:
+    Args:
         data (pd.DataFrame): Dữ liệu hiện tại của hành khách (DataFrame).
         passenger_id (int): ID của hành khách mới.
         survived (int): Tình trạng sống sót (0 = không, 1 = có).
