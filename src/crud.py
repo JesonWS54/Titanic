@@ -220,9 +220,9 @@ def delete_entry(data, passenger_id):
     
     if passenger_id in data["PassengerId"].values:
         if passenger_id in deleted_passenger_ids:
-        deleted_passenger_ids.append(passenger_id)
-        data = data[data["PassengerId"] != passenger_id])
-        return data
+            deleted_passenger_ids.append(passenger_id)
+            data = data[data["PassengerId"] != passenger_id])
+            return data
     else:
         return data
 
