@@ -120,6 +120,7 @@ def AgeGenderSurvival():
     plt.legend(title='Gender')
     plt.ylim([0, 100])
     plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
     plt.show()
 
 
