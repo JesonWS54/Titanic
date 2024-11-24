@@ -9,7 +9,7 @@ def fill_missing_Age(titanic_data):
     Returns:
       Series containing the filled 'Age' column.
     """
-    titanic_data['Age']=titanic_data.groupby('Pclass')['Age'].transform(lambda x: x.fillna(x.mean()))
+    titanic_data['Age']=titanic_data.groupby('Pclass')['Age'].transform(lambda x: x.fillna(int(x.mean())+0.5))
     return titanic_data['Age']
 
 def fill_missing_Embarked(titanic_data):
@@ -47,7 +47,7 @@ def fix_wrong_value_Fare(titanic_data):
       Series containing the fixed 'Fare' column.
     """
     titanic_data['Family_size']=titanic_data['SibSp']+titanic_data['Parch']
-    average_fare_by_group = titanic_data[titanic_data['Fare'] > 0].groupby(['Pclass', 'Family_size'])['Fare'].mean()
+    average_fare_by_group = titanic_data[titanic_data['Fare'] > 0].groupby(['Pclass', 'Family_size'])['Fare'].mean().round(3)
 
     titanic_data.loc[(titanic_data['Fare'] == 0) & (titanic_data['Ticket'] != 'LINE'), 'Fare'] = (
     titanic_data.loc[(titanic_data['Fare'] == 0) & (titanic_data['Ticket'] != 'LINE')].apply(
