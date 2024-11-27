@@ -62,16 +62,16 @@ def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, pa
 def add():
         global data
         try:
-            passenger_id = int(simpledialog.askinteger("Thêm dữ liệu", "Nhập PassengerId:"))
-            survived = int(simpledialog.askinteger("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
-            pclass = int(simpledialog.askinteger("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
+            passenger_id = int(simpledialog.askstring("Thêm dữ liệu", "Nhập PassengerId:"))
+            survived = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
+            pclass = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
             name = simpledialog.askstring("Thêm dữ liệu", "Nhập Name:")
             sex = simpledialog.askstring("Thêm dữ liệu", "Nhập Sex (male/female):")
-            age = float(simpledialog.askfloat("Thêm dữ liệu", "Nhập Age:"))
-            sibsp = int(simpledialog.askinteger("Thêm dữ liệu", "Nhập SibSp:"))
-            parch = int(simpledialog.askinteger("Thêm dữ liệu", "Nhập Parch:"))
+            age = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Age:"))
+            sibsp = int(simpledialog.askstring("Thêm dữ liệu", "Nhập SibSp:"))
+            parch = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Parch:"))
             ticket = simpledialog.askstring("Thêm dữ liệu", "Nhập Ticket:")
-            fare = float(simpledialog.askfloat("Thêm dữ liệu", "Nhập Fare:"))
+            fare = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Fare:"))
             cabin = simpledialog.askstring("Thêm dữ liệu", "Nhập Cabin (có thể để trống):")
             embarked = simpledialog.askstring("Thêm dữ liệu", "Nhập Embarked (C, Q, S):")
 
