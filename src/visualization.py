@@ -3,7 +3,7 @@ import pandas as pd
 
 
 
-file_path = 'Titanic.csv'
+file_path = 'data/Titanic.csv'
 titanic_data = pd.read_csv(file_path)
 
 # Biểu đồ phân phối tuổi (Histogram)
