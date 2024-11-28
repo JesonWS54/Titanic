@@ -3,33 +3,33 @@ from tkinter import ttk, messagebox, simpledialog
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+from data_cleaning import clean_data
+import visualization as vs
+import crud as ld
+from utils import load
+from utils import save
 # Đường dẫn tới file CSV
 FILEPATH = "data/Titanic.csv"
 
 # Load dữ liệu
 def load_data(filepath):
-    try:
-        return pd.read_csv(filepath)
-    except Exception as e:
-        messagebox.showerror("Lỗi", f"Không thể tải dữ liệu: {e}")
-        return pd.DataFrame()
+    load(filepath)
 
-data = load_data(FILEPATH)
-
+data = load(FILEPATH)
 # Lưu dữ liệu
 def save_data(data, filepath):
-    try:
-        data.to_csv(filepath, index=False)
-    except Exception as e:
-        messagebox.showerror("Lỗi", f"Không thể lưu dữ liệu: {e}")
+    save(data, filepath)
+
+
 
 # Hiển thị dữ liệu với phân trang
 def display_data():
     global data
     data_window = tk.Toplevel()
     data_window.title("Hiển thị dữ liệu")
-    data_window.geometry("800x600")
+    
+    # Đặt cửa sổ ở chế độ toàn màn hình
+    data_window.state('zoomed') 
 
     # Frame chứa Treeview và Scrollbars
     frame = ttk.Frame(data_window)
@@ -56,7 +56,7 @@ def display_data():
         tree.heading(col, text=col)
         tree.column(col, width=100)
 
-    records_per_page = 20
+    records_per_page = 30
     total_pages = (len(data) + records_per_page - 1) // records_per_page
     current_page = tk.IntVar(value=1)
     page_info = tk.StringVar()
@@ -88,59 +88,36 @@ def display_data():
 
     load_page(current_page.get())
 
+
 # Chức năng CRUD
 def crud_interface():
     global data
-
-    def add_entry():
-        new_row = {col: simpledialog.askstring("Thêm dữ liệu", f"Nhập {col}:") for col in data.columns}
-        data.loc[len(data)] = new_row
-        save_data(data, FILEPATH)
-        messagebox.showinfo("Thông báo", "Đã thêm hành khách mới.")
-
-    def read_entry():
-        passenger_id = simpledialog.askinteger("Đọc dữ liệu", "Nhập Passenger ID:")
-        result = data[data["PassengerId"] == passenger_id]
-        if not result.empty:
-            info = "\n".join([f"{col}: {result.iloc[0][col]}" for col in result.columns])
-            messagebox.showinfo("Thông tin hành khách", info)
-        else:
-            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
-
-    def update_entry():
-        passenger_id = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập Passenger ID:")
-        if passenger_id in data["PassengerId"].values:
-            for col in data.columns:
-                new_value = simpledialog.askstring("Cập nhật dữ liệu", f"Nhập {col} (bỏ qua để giữ nguyên):")
-                if new_value:
-                    data.loc[data["PassengerId"] == passenger_id, col] = new_value
-            save_data(data, FILEPATH)
-            messagebox.showinfo("Thông báo", "Đã cập nhật thông tin hành khách.")
-        else:
-            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
-
-    def delete_entry():
-        passenger_id = simpledialog.askinteger("Xóa dữ liệu", "Nhập Passenger ID:")
-        if passenger_id in data["PassengerId"].values:
-            data.drop(data[data["PassengerId"] == passenger_id].index, inplace=True)
-            save_data(data, FILEPATH)
-            messagebox.showinfo("Thông báo", "Đã xóa hành khách.")
-        else:
-            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
+    def add_passenger():
+        global data
+        data=ld.add(data)
+    def read_passenger():
+        global data
+        ld.read(data)
+    def update_passenger():
+        global data
+        ld.update(data)
+    def delete_passenger():
+        global data
+        data=ld.delete(data)
 
     crud_window = tk.Toplevel()
     crud_window.title("Chức năng CRUD")
     crud_window.geometry("400x300")
 
-    ttk.Button(crud_window, text="Thêm", command=add_entry).pack(pady=5)
-    ttk.Button(crud_window, text="Đọc", command=read_entry).pack(pady=5)
-    ttk.Button(crud_window, text="Cập nhật", command=update_entry).pack(pady=5)
-    ttk.Button(crud_window, text="Xóa", command=delete_entry).pack(pady=5)
+    ttk.Button(crud_window, text="Thêm", command=add_passenger).pack(pady=5)
+    ttk.Button(crud_window, text="Đọc", command=read_passenger).pack(pady=5)
+    ttk.Button(crud_window, text="Cập nhật", command=update_passenger).pack(pady=5)
+    ttk.Button(crud_window, text="Xóa", command=delete_passenger).pack(pady=5)
 
 # Làm sạch dữ liệu
 def clean_data_interface():
     global data
-    data.dropna(inplace=True)
+    clean_data(data)
     save_data(data, FILEPATH)
     messagebox.showinfo("Thông báo", "Dữ liệu đã được làm sạch.")
 
@@ -148,39 +125,56 @@ def clean_data_interface():
 def visualize_data_interface():
     global data
 
-    def histogram():
-        plt.figure(figsize=(10, 6))
-        sns.histplot(data['Age'], bins=30, kde=True, color='blue', edgecolor='black')
-        plt.title('Distribution of Passenger Age', fontsize=16, fontweight='bold')
-        plt.xlabel('Age', fontsize=14)
-        plt.ylabel('Count', fontsize=14)
-        plt.show()
-
-    def bar_chart_survival():
-        plt.figure(figsize=(8, 6))
-        survival_by_gender = data.groupby('Sex')['Survived'].mean() * 100
-        sns.barplot(x=survival_by_gender.index, y=survival_by_gender.values, palette='viridis')
-        plt.title('Survival Rate by Gender (%)', fontsize=16, fontweight='bold')
-        plt.xlabel('Gender', fontsize=14)
-        plt.ylabel('Survival Rate (%)', fontsize=14)
-        plt.show()
-
     viz_window = tk.Toplevel()
     viz_window.title("Trực quan hóa dữ liệu")
-    viz_window.geometry("400x300")
 
-    ttk.Button(viz_window, text="Biểu đồ phân phối tuổi", command=histogram).pack(pady=10)
-    ttk.Button(viz_window, text="Tỷ lệ sống sót theo giới tính", command=bar_chart_survival).pack(pady=10)
+    # Kích thước cửa sổ
+    window_width = 600
+    window_height = 500
+
+    # Lấy kích thước màn hình
+    screen_width = viz_window.winfo_screenwidth()
+    screen_height = viz_window.winfo_screenheight()
+
+    # Tính toán vị trí trung tâm
+    position_x = (screen_width - window_width) // 2
+    position_y = (screen_height - window_height) // 2
+
+    # Đặt kích thước và vị trí cửa sổ
+    viz_window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+
+    ttk.Button(viz_window, text="Biểu đồ phân phối tuổi", command=lambda: vs.Histogram(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Tỷ lệ sống sót theo giới tính", command=lambda: vs.Barchartsurvival(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Tỷ lệ sống sót theo tầng lớp vé", command=lambda: vs.Barchartticket(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Tỷ lệ sống sót theo theo tầng lớp vé và giới tính", command=lambda: vs.BarChartGenderSurvival(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Biểu đồ thể hiện số lượng người sống sót theo giá vé", command=lambda: vs.FareSurvivalmain(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Biểu đồ thể hiện số lượng người sống sót theo tuổi", command=lambda: vs.SurvivalByAge(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Biểu đồ thể hiện số lượng người sống sót theo tuổi và giới tính", command=lambda: vs.AgeGenderSurvival(data)).pack(pady=10)
 
 # Giao diện chính
 def main_gui():
     root = tk.Tk()
     root.title("Chương trình phân tích dữ liệu Titanic")
-    root.geometry("400x300")
+
+    # Kích thước cửa sổ
+    window_width = 400
+    window_height = 300
+
+    # Lấy kích thước màn hình
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Tính toán vị trí trung tâm
+    position_x = (screen_width - window_width) // 2
+    position_y = (screen_height - window_height) // 2
+
+    # Đặt kích thước và vị trí cửa sổ
+    root.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
 
     ttk.Button(root, text="Hiển thị dữ liệu", command=display_data).pack(pady=10)
-    ttk.Button(root, text="Chức năng CRUD", command=crud_interface).pack(pady=10)
+    
     ttk.Button(root, text="Làm sạch dữ liệu", command=clean_data_interface).pack(pady=10)
+    ttk.Button(root, text="Chức năng CRUD", command=crud_interface).pack(pady=10)
     ttk.Button(root, text="Trực quan hóa dữ liệu", command=visualize_data_interface).pack(pady=10)
 
     root.mainloop()

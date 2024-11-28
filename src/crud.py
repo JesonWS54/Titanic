@@ -1,19 +1,18 @@
 import pandas as pd
 from tkinter import ttk, messagebox, simpledialog
-FILEPATH = "data/Titanic.csv"
-def load_data(filepath):
-    try:
-        return pd.read_csv(filepath)
-    except Exception as e:
-        messagebox.showerror("Lỗi", f"Không thể tải dữ liệu: {e}")
-        return pd.DataFrame()
 
-data = load_data(FILEPATH)
+from utils import save
+from utils import load
+FILEPATH = "data/Titanic.csv"
+# Load dữ liệu
+def load_data(filepath):
+    load(filepath)
+
+# data = load(FILEPATH)
+# # Lưu dữ liệu
 def save_data(data, filepath):
-    try:
-        data.to_csv(filepath, index=False)
-    except Exception as e:
-        messagebox.showerror("Lỗi", f"Không thể lưu dữ liệu: {e}")
+    save(data, filepath)
+
 deleted_passenger_ids = []
 def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked):
     """
@@ -59,34 +58,35 @@ def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, pa
     except ValueError as e:
         return data, False
 
-def add():
-        global data
-        try:
-            passenger_id = int(simpledialog.askstring("Thêm dữ liệu", "Nhập PassengerId:"))
-            survived = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
-            pclass = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
-            name = simpledialog.askstring("Thêm dữ liệu", "Nhập Name:")
-            sex = simpledialog.askstring("Thêm dữ liệu", "Nhập Sex (male/female):")
-            age = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Age:"))
-            sibsp = int(simpledialog.askstring("Thêm dữ liệu", "Nhập SibSp:"))
-            parch = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Parch:"))
-            ticket = simpledialog.askstring("Thêm dữ liệu", "Nhập Ticket:")
-            fare = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Fare:"))
-            cabin = simpledialog.askstring("Thêm dữ liệu", "Nhập Cabin (có thể để trống):")
-            embarked = simpledialog.askstring("Thêm dữ liệu", "Nhập Embarked (C, Q, S):")
+def add(data):
+    # global data
+    try:
+        passenger_id = int(simpledialog.askstring("Thêm dữ liệu", "Nhập PassengerId:"))
+        survived = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
+        pclass = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
+        name = simpledialog.askstring("Thêm dữ liệu", "Nhập Name:")
+        sex = simpledialog.askstring("Thêm dữ liệu", "Nhập Sex (male/female):")
+        age = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Age:"))
+        sibsp = int(simpledialog.askstring("Thêm dữ liệu", "Nhập SibSp:"))
+        parch = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Parch:"))
+        ticket = simpledialog.askstring("Thêm dữ liệu", "Nhập Ticket:")
+        fare = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Fare:"))
+        cabin = simpledialog.askstring("Thêm dữ liệu", "Nhập Cabin (có thể để trống):")
+        embarked = simpledialog.askstring("Thêm dữ liệu", "Nhập Embarked (C, Q, S):")
 
-            data, success = create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked)
+        data, success = create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked)
 
-            if success:
-                save_data(data, FILEPATH)
-                messagebox.showinfo("Thông báo", "Đã thêm hành khách mới.")
-            else:
-                messagebox.showerror("Lỗi", "Có lỗi xảy ra khi thêm hành khách.")
-        except ValueError:
-            messagebox.showerror("Lỗi", "Vui lòng nhập đúng dữ liệu.")
-        except Exception as e:
-            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
-            
+        if success:
+            save_data(data, FILEPATH)
+            messagebox.showinfo("Thông báo", "Đã thêm hành khách mới.")
+        else:
+            messagebox.showerror("Lỗi", "Có lỗi xảy ra khi thêm hành khách.")
+    except ValueError:
+        messagebox.showerror("Lỗi", "Vui lòng nhập đúng dữ liệu.")
+    except Exception as e:
+        messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+    return data
+
 
     
 
@@ -110,18 +110,19 @@ def read_entry(data, passenger_id):
     else:
         return None
 
-def read():
-        global data
-        try:
-            passenger_id = simpledialog.askinteger("Đọc dữ liệu", "Nhập Passenger ID:")
-            result = data[data["PassengerId"] == passenger_id]
-            if not result.empty:
-                info = "\n".join([f"{col}: {result.iloc[0][col]}" for col in result.columns])
-                messagebox.showinfo("Thông tin hành khách", info)
-            else:
-                messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
-        except Exception as e:
-            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+
+def read(data):
+        # global data
+    try:
+        passenger_id = simpledialog.askinteger("Đọc dữ liệu", "Nhập Passenger ID:")
+        result = data[data["PassengerId"] == passenger_id]
+        if not result.empty:
+            info = "\n".join([f"{col}: {result.iloc[0][col]}" for col in result.columns])
+            messagebox.showinfo("Thông tin hành khách", info)
+        else:
+            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
+    except Exception as e:
+        messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
   
 
 
@@ -150,7 +151,6 @@ def update_entry(data, passenger_id,survival, pclass, name, sex, age, sibsp, par
     data_to_update = data[data["PassengerId"].isin(deleted_passenger_ids) == False]
     if passenger_id not in data_to_update["PassengerId"].values:
         return None
-    
     if survival:
         data.loc[data["PassengerId"] == passenger_id, "Survived"] = survival
     if pclass:
@@ -173,27 +173,28 @@ def update_entry(data, passenger_id,survival, pclass, name, sex, age, sibsp, par
         data.loc[data["PassengerId"] == passenger_id, "Cabin"] = cabin
     if embarked:
         data.loc[data["PassengerId"] == passenger_id, "Embarked"] = embarked
-
+    
     return data
 
-def update():
-    global data
+def update(data):
+    # global data
+
     try:
         passenger_id = simpledialog.askinteger("Cập nhật thông tin", "Nhập Passenger ID:")
         if passenger_id not in data["PassengerId"].values:
             messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
             return
-        survival = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Survival (CANCE nếu không thay đổi):")
-        pclass = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Pclass (CANCE nếu không thay đổi):")
-        name = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Name (CANCE nếu không thay đổi):")
-        sex = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCE nếu không thay đổi):")
-        age = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Age (CANCE nếu không thay đổi):")
-        sibsp = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập SibSp (CANCE nếu không thay đổi):")
-        parch = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập Parch (CANCE nếu không thay đổi):")
-        ticket = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Ticket (CANCE nếu không thay đổi):")
-        fare = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Fare (CANCE nếu không thay đổi):")
-        cabin = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Cabin (CANCE nếu không thay đổi):")
-        embarked = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Embarked (CANCE nếu không thay đổi):")
+        survival = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Survival (CANCEL nếu không thay đổi):")
+        pclass = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Pclass (CANCEL nếu không thay đổi):")
+        name = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Name (CANCEL nếu không thay đổi):")
+        sex = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCEL nếu không thay đổi):")
+        age = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Age (CANCEL nếu không thay đổi):")
+        sibsp = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập SibSp (CANCEL nếu không thay đổi):")
+        parch = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập Parch (CANCEL nếu không thay đổi):")
+        ticket = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Ticket (CANCEL nếu không thay đổi):")
+        fare = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Fare (CANCEL nếu không thay đổi):")
+        cabin = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Cabin (CANCEL nếu không thay đổi):")
+        embarked = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Embarked (CANCEL nếu không thay đổi):")
             
         updated_data = update_entry(data, passenger_id,survival,pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked)
             
@@ -226,21 +227,24 @@ def delete_entry(data, passenger_id):
     else:
         return data
 
-def delete():
-        global data
-        try:
-            passenger_id = simpledialog.askinteger("Xóa hành khách", "Nhập Passenger ID:")
-            updated_data = delete_entry(data, passenger_id)
-            
-            if updated_data is not None:
-                data = updated_data
-                save_data(data, FILEPATH)
-                messagebox.showinfo("Thông báo", "Đã xóa hành khách thành công.")
-            else:
-                messagebox.showerror("Lỗi", "Không thể xóa hành khách. Vui lòng kiểm tra lại ID.")
+def delete(data):
+    # global data
+    try:
+        passenger_id = simpledialog.askinteger("Xóa hành khách", "Nhập Passenger ID:")
+        updated_data = delete_entry(data, passenger_id)
+        
+        if updated_data is not None:
+            data = updated_data
+            save_data(data, FILEPATH)
+            messagebox.showinfo("Thông báo", "Đã xóa hành khách thành công.")
+        else:
+            messagebox.showerror("Lỗi", "Không thể xóa hành khách. Vui lòng kiểm tra lại ID.")
 
-        except Exception as e:
-            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+    except Exception as e:
+        messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+    return data
+
+
 
 
 
