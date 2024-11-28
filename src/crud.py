@@ -1,5 +1,6 @@
 import pandas as pd
 from tkinter import ttk, messagebox, simpledialog
+
 from utils import save
 from utils import load
 FILEPATH = "data/Titanic.csv"
@@ -11,6 +12,7 @@ def load_data(filepath):
 # # Lưu dữ liệu
 def save_data(data, filepath):
     save(data, filepath)
+
 deleted_passenger_ids = []
 def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked):
     """
@@ -84,7 +86,7 @@ def add(data):
     except Exception as e:
         messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
     return data
-            
+
 
     
 
@@ -108,18 +110,19 @@ def read_entry(data, passenger_id):
     else:
         return None
 
+
 def read(data):
         # global data
-        try:
-            passenger_id = simpledialog.askinteger("Đọc dữ liệu", "Nhập Passenger ID:")
-            result = data[data["PassengerId"] == passenger_id]
-            if not result.empty:
-                info = "\n".join([f"{col}: {result.iloc[0][col]}" for col in result.columns])
-                messagebox.showinfo("Thông tin hành khách", info)
-            else:
-                messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
-        except Exception as e:
-            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+    try:
+        passenger_id = simpledialog.askinteger("Đọc dữ liệu", "Nhập Passenger ID:")
+        result = data[data["PassengerId"] == passenger_id]
+        if not result.empty:
+            info = "\n".join([f"{col}: {result.iloc[0][col]}" for col in result.columns])
+            messagebox.showinfo("Thông tin hành khách", info)
+        else:
+            messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
+    except Exception as e:
+        messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
   
 
 
@@ -148,7 +151,6 @@ def update_entry(data, passenger_id,survival, pclass, name, sex, age, sibsp, par
     data_to_update = data[data["PassengerId"].isin(deleted_passenger_ids) == False]
     if passenger_id not in data_to_update["PassengerId"].values:
         return None
-    
     if survival:
         data.loc[data["PassengerId"] == passenger_id, "Survived"] = survival
     if pclass:
@@ -176,6 +178,7 @@ def update_entry(data, passenger_id,survival, pclass, name, sex, age, sibsp, par
 
 def update(data):
     # global data
+
     try:
         passenger_id = simpledialog.askinteger("Cập nhật thông tin", "Nhập Passenger ID:")
         if passenger_id not in data["PassengerId"].values:
@@ -240,6 +243,7 @@ def delete(data):
     except Exception as e:
         messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
     return data
+
 
 
 

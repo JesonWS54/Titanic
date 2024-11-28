@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-file_path = 'data/Titanic.csv'
+
+file_path = 'Titanic.csv'
 titanic_data = pd.read_csv(file_path)
 
 # Biểu đồ phân phối tuổi (Histogram)
+
 def Histogram(titanic_data):
     plt.figure(figsize=(10, 6))
     plt.hist(titanic_data['Age'].dropna(), bins=30, color='blue', edgecolor='black', alpha=0.7)
@@ -17,7 +19,9 @@ def Histogram(titanic_data):
     plt.show()
 
 # Biểu đồ tỷ lệ sống sót theo giới tính (Bar Chart)
+
 def Barchartsurvival(titanic_data):
+
     plt.figure(figsize=(8, 6))
     survival_by_gender = titanic_data.groupby('Sex')['Survived'].mean() * 100
     plt.bar(survival_by_gender.index, survival_by_gender.values, color=['blue', 'pink'], edgecolor='black', alpha=0.7)
@@ -29,7 +33,9 @@ def Barchartsurvival(titanic_data):
     plt.show()
 
 # Biểu đồ tỷ lệ sống sót theo tầng lớp vé (Bar Chart)
+
 def Barchartticket(titanic_data):
+
     plt.figure(figsize=(8, 6))
     survival_by_pclass = titanic_data.groupby('Pclass')['Survived'].mean() * 100
     plt.bar(survival_by_pclass.index, survival_by_pclass.values, color=['green', 'orange', 'red'], edgecolor='black', alpha=0.7)
@@ -42,7 +48,9 @@ def Barchartticket(titanic_data):
     plt.show()
 
 # Biểu đồ tỷ lệ sống sót theo tầng lớp vé và giới tính (Bar Chart)
+
 def BarChartGenderSurvival(titanic_data):
+
     plt.figure(figsize=(12, 6))
     survival_rate = titanic_data.groupby(['Pclass', 'Sex'])['Survived'].mean().unstack() * 100
 
@@ -70,6 +78,7 @@ def BarChartGenderSurvival(titanic_data):
     plt.show()
 
 #Biểu đồ thể hiện số lượng người sống sót theo giá vé
+
  
 def FareSurvivalmain(titanic_data):
     def plot_ticket_price_distribution(titanic_data):
@@ -111,7 +120,9 @@ def SurvivalByAge(titanic_data):
 
     
 #Biểu đồ thể hiện số lượng người sống sót theo tuổi và giới tính
+
 def AgeGenderSurvival(titanic_data):
+
     age_bins = [0, 18, 35, 50, 80]
     labels = ['0-17', '18-34', '35-49', '50+']
     titanic_data['AgeGroup'] = pd.cut(titanic_data['Age'], bins=age_bins, labels=labels)
@@ -120,6 +131,7 @@ def AgeGenderSurvival(titanic_data):
 
     survival_rate.plot(kind='bar', stacked=True, figsize=(12, 6), color=['skyblue', 'lightpink'], edgecolor='black')
     plt.title('Survival Rate by Age Group and Gender', fontsize=16, fontweight='bold')
+
     plt.xlabel('Age Group', fontsize=10)
     plt.ylabel('Survival Rate (%)', fontsize=14)
     plt.legend(title='Gender')
@@ -127,36 +139,3 @@ def AgeGenderSurvival(titanic_data):
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.show()
 
-
-# # Call the function to display the charts
-# while True:
-#     print("Nhap vao bieu do muon hien thi:")
-#     print("0: Ket thuc!")
-#     print("1: Bieu do phan phoi tuoi")
-#     print("2: Bieu do ty le song sot theo gioi tinh")
-#     print("3: Bieu do ty le song sot theo tang lop ve")
-#     print("4: Bieu do ty le song sot theo tang lop ve va gioi tinh")
-#     print("5: Bieu do the hien so luong nguoi song sot theo gia ve")
-#     print("6: Bieu do the hien so luong nguoi song sot theo tuoi")
-#     print("7: Bieu do the hien ty le song sot theo tuoi va gioi tinh")
-#     choose = int(input("Nhap vao bieu do muon hien thi: "))
-#     while choose < 0 or choose > 7:
-#         choose = int(input("Nhap lai lua chon hop le: "))
-#     if choose == 0:
-#         print("Tam biet!")
-#         break
-#     elif choose == 1:
-#         Histogram()
-#     elif choose == 2:
-#         Barchartsurvival()
-#     elif choose == 3:
-#         Barchartticket()
-#     elif choose == 4:
-#         BarChartGenderSurvival()
-#     elif choose == 5:
-#         plot_ticket_price_distribution()
-#         FareSurvival()
-#     elif choose == 6:
-#         SurvivalByAge()
-#     elif choose == 7:
-#         AgeGenderSurvival()
