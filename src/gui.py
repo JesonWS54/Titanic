@@ -91,14 +91,19 @@ def display_data():
 
 # Chức năng CRUD
 def crud_interface():
+    global data
     def add_passenger():
-        ld.add()
+        global data
+        data=ld.add(data)
     def read_passenger():
-        ld.read()
+        global data
+        ld.read(data)
     def update_passenger():
-        ld.update()
+        global data
+        ld.update(data)
     def delete_passenger():
-        ld.delete()
+        global data
+        data=ld.delete(data)
 
     crud_window = tk.Toplevel()
     crud_window.title("Chức năng CRUD")
@@ -167,8 +172,9 @@ def main_gui():
     root.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
 
     ttk.Button(root, text="Hiển thị dữ liệu", command=display_data).pack(pady=10)
-    ttk.Button(root, text="Chức năng CRUD", command=crud_interface).pack(pady=10)
+    
     ttk.Button(root, text="Làm sạch dữ liệu", command=clean_data_interface).pack(pady=10)
+    ttk.Button(root, text="Chức năng CRUD", command=crud_interface).pack(pady=10)
     ttk.Button(root, text="Trực quan hóa dữ liệu", command=visualize_data_interface).pack(pady=10)
 
     root.mainloop()
