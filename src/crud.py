@@ -180,17 +180,17 @@ def update():
         if passenger_id not in data["PassengerId"].values:
             messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
             return
-        survival = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Survival (CANCE nếu không thay đổi):")
-        pclass = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCE nếu không thay đổi):")
-        name = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Name (CANCE nếu không thay đổi):")
-        sex = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCE nếu không thay đổi):")
-        age = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Age (CANCE nếu không thay đổi):")
-        sibsp = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập SibSp (CANCE nếu không thay đổi):")
-        parch = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập Parch (CANCE nếu không thay đổi):")
-        ticket = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Ticket (CANCE nếu không thay đổi):")
-        fare = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Fare (CANCE nếu không thay đổi):")
-        cabin = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Cabin (CANCE nếu không thay đổi):")
-        embarked = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Embarked (CANCE nếu không thay đổi):")
+        survival = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Survival (CANCEL nếu không thay đổi):")
+        pclass = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Pclass (CANCEL nếu không thay đổi):")
+        name = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Name (CANCEL nếu không thay đổi):")
+        sex = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Sex (CANCEL nếu không thay đổi):")
+        age = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Age (CANCEL nếu không thay đổi):")
+        sibsp = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập SibSp (CANCEL nếu không thay đổi):")
+        parch = simpledialog.askinteger("Cập nhật dữ liệu", "Nhập Parch (CANCEL nếu không thay đổi):")
+        ticket = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Ticket (CANCEL nếu không thay đổi):")
+        fare = simpledialog.askfloat("Cập nhật dữ liệu", "Nhập Fare (CANCEL nếu không thay đổi):")
+        cabin = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Cabin (CANCEL nếu không thay đổi):")
+        embarked = simpledialog.askstring("Cập nhật dữ liệu", "Nhập Embarked (CANCEL nếu không thay đổi):")
             
         updated_data = update_entry(data, passenger_id,survival,pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked)
             
@@ -216,7 +216,7 @@ def delete_entry(data, passenger_id):
     """
     
     if passenger_id in data["PassengerId"].values:
-        if passenger_id in deleted_passenger_ids:
+        if passenger_id not in deleted_passenger_ids:
             deleted_passenger_ids.append(passenger_id)
             data = data[data["PassengerId"] != passenger_id]
             return data
