@@ -65,8 +65,8 @@ def normalize_parentheses_to_quotes(data):
     Modifies:
         Replacing '(' and ')' with '"', and cleaning redundant patterns like '("' or '")'.
     """
-    data['Name'] = data['Name'].apply(lambda name: name.replace('(', '"').
-                                                      replace(')', '"').replace('("','"').replace('")','"'))
+    data['Name'] = data['Name'].apply(lambda name: name.replace('("','"').replace('")','"').replace('(', '"').
+                                                      replace(')', '"'))
 
 def clean_data(data):
     """Performs data cleaning steps for the Titanic DataFrame.
