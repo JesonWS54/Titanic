@@ -68,18 +68,42 @@ def add(data):
             else:
                 break
                 
-        survived = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
-        pclass = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
+        while True:
+            survived = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
+            if survived not in [0,1]:
+                messagebox.showerror("Lỗi", "Yêu cầu nhập lại 0 hoặc 1")
+            else:
+                break
+        while True:
+            pclass = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
+            if pclass not in [1,2,3]:
+                messagebox.showerror("Lỗi", "Yêu cầu nhập đúng!")
+            else:
+                break
         name = simpledialog.askstring("Thêm dữ liệu", "Nhập Name:")
-        sex = simpledialog.askstring("Thêm dữ liệu", "Nhập Sex (male/female):")
-        age = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Age:"))
+        while True: 
+            sex = simpledialog.askstring("Thêm dữ liệu", "Nhập Sex (male/female):")
+            if sex.lower() not in ["male","female"]:
+                messagebox.showerror("Lỗi", "Yêu cầu nhập đúng!")
+            else:
+                break
+        while True:         
+            age = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Age:"))
+            if age <= 0:
+                messagebox.showerror("Lỗi", "Yêu cầu nhập đúng!")
+            else:
+                break
         sibsp = int(simpledialog.askstring("Thêm dữ liệu", "Nhập SibSp:"))
         parch = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Parch:"))
         ticket = simpledialog.askstring("Thêm dữ liệu", "Nhập Ticket:")
         fare = float(simpledialog.askstring("Thêm dữ liệu", "Nhập Fare:"))
         cabin = simpledialog.askstring("Thêm dữ liệu", "Nhập Cabin (có thể để trống):")
-        embarked = simpledialog.askstring("Thêm dữ liệu", "Nhập Embarked (C, Q, S):")
-
+        while True:
+            embarked = simpledialog.askstring("Thêm dữ liệu", "Nhập Embarked (C, Q, S):")
+            if embarked not in ["C","Q","S"]:
+                messagebox.showerror("Lỗi", "Yêu cầu nhập đúng!")
+            else:
+                break
         data, success = create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked)
 
         if success:
