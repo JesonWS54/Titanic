@@ -260,19 +260,19 @@ def delete_entry(data, passenger_ids):
 
 def delete():
     global data
-        try:
-            passenger_id = simpledialog.askinteger("Xóa hành khách", "Nhập Passenger ID:")
-            updated_data = delete_entry(data, passenger_id)
+    try:
+        passenger_id = simpledialog.askinteger("Xóa hành khách", "Nhập Passenger ID:")
+        updated_data = delete_entry(data, passenger_id)
             
-            if updated_data is not None:
-                data = updated_data
-                save_data(data, FILEPATH)
-                messagebox.showinfo("Thông báo", "Đã xóa hành khách thành công.")
-            else:
-                messagebox.showerror("Lỗi", "Không thể xóa hành khách. Vui lòng kiểm tra lại ID.")
+        if updated_data is not None:
+            data = updated_data
+            save_data(data, FILEPATH)
+            messagebox.showinfo("Thông báo", "Đã xóa hành khách thành công.")
+        else:
+            messagebox.showerror("Lỗi", "Không thể xóa hành khách. Vui lòng kiểm tra lại ID.")
 
-        except Exception as e:
-            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+    except Exception as e:
+         messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
 
 
 
