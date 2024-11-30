@@ -258,8 +258,7 @@ def delete_entry(data, passenger_ids):
     else:
         return data
 
-def delete():
-    global data
+def delete(data):
     try:
         passenger_id = simpledialog.askinteger("Xóa hành khách", "Nhập Passenger ID:")
         updated_data = delete_entry(data, passenger_id)
