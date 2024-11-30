@@ -8,6 +8,7 @@ import visualization as vs
 import crud as ld
 from utils import load
 from utils import save
+
 # Đường dẫn tới file CSV
 FILEPATH = "data/Titanic.csv"
 
@@ -16,22 +17,18 @@ def load_data(filepath):
     load(filepath)
 
 data = load(FILEPATH)
+
 # Lưu dữ liệu
 def save_data(data, filepath):
     save(data, filepath)
-
-
 
 # Hiển thị dữ liệu với phân trang
 def display_data():
     global data
     data_window = tk.Toplevel()
     data_window.title("Hiển thị dữ liệu")
-    
-    # Đặt cửa sổ ở chế độ toàn màn hình
-    data_window.state('zoomed') 
+    data_window.state('zoomed')
 
-    # Frame chứa Treeview và Scrollbars
     frame = ttk.Frame(data_window)
     frame.pack(fill=tk.BOTH, expand=True)
 
@@ -88,22 +85,24 @@ def display_data():
 
     load_page(current_page.get())
 
-
 # Chức năng CRUD
 def crud_interface():
     global data
     def add_passenger():
         global data
-        data=ld.add(data)
+        data = ld.add(data)
+
     def read_passenger():
         global data
         ld.read(data)
+
     def update_passenger():
         global data
         ld.update(data)
+
     def delete_passenger():
         global data
-        data=ld.delete(data)
+        data = ld.delete(data)
 
     crud_window = tk.Toplevel()
     crud_window.title("Chức năng CRUD")
@@ -128,54 +127,79 @@ def visualize_data_interface():
     viz_window = tk.Toplevel()
     viz_window.title("Trực quan hóa dữ liệu")
 
-    # Kích thước cửa sổ
     window_width = 600
     window_height = 500
 
-    # Lấy kích thước màn hình
     screen_width = viz_window.winfo_screenwidth()
     screen_height = viz_window.winfo_screenheight()
 
-    # Tính toán vị trí trung tâm
     position_x = (screen_width - window_width) // 2
     position_y = (screen_height - window_height) // 2
 
-    # Đặt kích thước và vị trí cửa sổ
     viz_window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
 
     ttk.Button(viz_window, text="Biểu đồ phân phối tuổi", command=lambda: vs.Histogram(data)).pack(pady=10)
     ttk.Button(viz_window, text="Tỷ lệ sống sót theo giới tính", command=lambda: vs.Barchartsurvival(data)).pack(pady=10)
     ttk.Button(viz_window, text="Tỷ lệ sống sót theo tầng lớp vé", command=lambda: vs.Barchartticket(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Tỷ lệ sống sót theo theo tầng lớp vé và giới tính", command=lambda: vs.BarChartGenderSurvival(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Biểu đồ thể hiện số lượng người sống sót theo giá vé", command=lambda: vs.FareSurvivalmain(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Biểu đồ thể hiện số lượng người sống sót theo tuổi", command=lambda: vs.SurvivalByAge(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Biểu đồ thể hiện số lượng người sống sót theo tuổi và giới tính", command=lambda: vs.AgeGenderSurvival(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Tỷ lệ sống sót theo tầng lớp vé và giới tính", command=lambda: vs.BarChartGenderSurvival(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Biểu đồ số lượng người sống sót theo giá vé", command=lambda: vs.FareSurvivalmain(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Biểu đồ số lượng người sống sót theo tuổi", command=lambda: vs.SurvivalByAge(data)).pack(pady=10)
+    ttk.Button(viz_window, text="Biểu đồ số lượng người sống sót theo tuổi và giới tính", command=lambda: vs.AgeGenderSurvival(data)).pack(pady=10)
+
+
+# Hàm sắp xếp dữ liệu (tùy chọn cột)
+def sort_data():
+    global data
+    if data.empty:
+        messagebox.showerror("Lỗi", "Dữ liệu trống. Không thể sắp xếp.")
+        return
+    allowed_columns = ['PassengerId', 'Age', 'Name']  
+    available_columns = [col for col in allowed_columns if col in data.columns]
+
+    if not available_columns:
+        messagebox.showerror("Lỗi", "Không có cột hợp lệ để sắp xếp.")
+        return
+
+    sort_window = tk.Toplevel()
+    sort_window.title("Sắp xếp dữ liệu")
+
+    def sort_by_column(column_name):
+        try:
+            data.sort_values(by=[column_name], ascending=True, inplace=True) # sắp
+            save_data(data, FILEPATH)
+            messagebox.showinfo("Thông báo", f"Dữ liệu đã được sắp xếp theo '{column_name}' thành công!")
+            sort_window.destroy()
+        except Exception as e:
+            messagebox.showerror("Lỗi", f"Không thể sắp xếp dữ liệu: {e}")
+
+    # Giao diện chọn cột để sắp xếp
+    ttk.Label(sort_window, text="Chọn cột để sắp xếp:").pack(pady=10)
+    for column in available_columns:
+        ttk.Button(sort_window, text=f"Sắp xếp theo {column}", 
+                   command=lambda col=column: sort_by_column(col)).pack(pady=5)
+
+    sort_window.mainloop()
 
 # Giao diện chính
 def main_gui():
     root = tk.Tk()
     root.title("Chương trình phân tích dữ liệu Titanic")
 
-    # Kích thước cửa sổ
     window_width = 400
-    window_height = 300
+    window_height = 350
 
-    # Lấy kích thước màn hình
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
-    # Tính toán vị trí trung tâm
     position_x = (screen_width - window_width) // 2
     position_y = (screen_height - window_height) // 2
 
-    # Đặt kích thước và vị trí cửa sổ
     root.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
-
     ttk.Button(root, text="Hiển thị dữ liệu", command=display_data).pack(pady=10)
-    
     ttk.Button(root, text="Làm sạch dữ liệu", command=clean_data_interface).pack(pady=10)
     ttk.Button(root, text="Chức năng CRUD", command=crud_interface).pack(pady=10)
     ttk.Button(root, text="Trực quan hóa dữ liệu", command=visualize_data_interface).pack(pady=10)
+    ttk.Button(root, text="Sắp xếp dữ liệu", command=sort_data).pack(pady=10)
 
     root.mainloop()
 
