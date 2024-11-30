@@ -239,65 +239,40 @@ def update(data):
 
 def delete_entry(data, passenger_ids):
     """
-    Xóa thông tin của các hành khách dựa trên danh sách PassengerId.
+    Xóa thông tin của một hành khách dựa trên PassengerId.
 
     Args:
         data (pd.DataFrame): Dữ liệu hiện tại của hành khách (DataFrame).
-        passenger_ids (list): Danh sách ID của hành khách cần xóa.
+        passenger_id (int): ID của hành khách cần xóa.
 
     Returns:
-        pd.DataFrame: DataFrame mới sau khi xóa các hành khách.
+        pd.DataFrame: DataFrame mới sau khi xóa hành khách.
+                      Nếu PassengerId không tồn tại, trả về thông báo lỗi.
     """
-    try:
-        passenger_ids_to_delete = [pid for pid in passenger_ids if pid in data["PassengerId"].values]
-        
-        if passenger_ids_to_delete:
-            data = data[~data["PassengerId"].isin(passenger_ids_to_delete)].reset_index(drop=True)
+    
+    if passenger_id in data["PassengerId"].values:
+        if passenger_id not in deleted_passenger_ids:
+            deleted_passenger_ids.append(passenger_id)
+            data = data[data["PassengerId"] != passenger_id]
+            return data
+    else:
         return data
-    except Exception as e:
-        raise ValueError(f"Lỗi trong quá trình xóa: {e}")
 
 def delete():
-    def perform_deletion():
-        global data
+    global data
         try:
-            selected_indices = listbox.curselection()
-            ids_to_delete = [id_list[i] for i in selected_indices]
-
-            if not ids_to_delete:
-                messagebox.showerror("Lỗi", "Vui lòng chọn ít nhất một hành khách.")
-                return
-            updated_data = delete_entry(data, ids_to_delete)
-
-            if len(updated_data) < len(data): 
+            passenger_id = simpledialog.askinteger("Xóa hành khách", "Nhập Passenger ID:")
+            updated_data = delete_entry(data, passenger_id)
+            
+            if updated_data is not None:
                 data = updated_data
                 save_data(data, FILEPATH)
-                messagebox.showinfo("Thông báo", "Đã xóa thành công các hành khách.")
-                delete_window.destroy() 
+                messagebox.showinfo("Thông báo", "Đã xóa hành khách thành công.")
             else:
-                messagebox.showerror("Lỗi", "Không tìm thấy ID hợp lệ để xóa.")
+                messagebox.showerror("Lỗi", "Không thể xóa hành khách. Vui lòng kiểm tra lại ID.")
+
         except Exception as e:
             messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
-
-    delete_window = tk.Toplevel()
-    delete_window.title("Xóa hành khách")
-    delete_window.geometry("400x300")
-
-    tk.Label(delete_window, text="Danh sách hành khách (chọn để xóa):", font=("Arial", 12)).pack(pady=10)
-
-
-    listbox = tk.Listbox(delete_window, selectmode=tk.MULTIPLE, font=("Arial", 10), width=50, height=15)
-    listbox.pack(pady=10)
-
-    id_list = data["PassengerId"].tolist()
-    for idx, passenger_id in enumerate(id_list):
-        name = data.loc[data["PassengerId"] == passenger_id, "Name"].values[0]
-        listbox.insert(idx, f"ID: {passenger_id} - {name}")
-
-    tk.Button(delete_window, text="Xóa", command=perform_deletion, bg="red", fg="white").pack(pady=10)
-
-
-
 
 
 
