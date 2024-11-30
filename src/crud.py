@@ -61,7 +61,13 @@ def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, pa
 def add(data):
     # global data
     try:
-        passenger_id = int(simpledialog.askstring("Thêm dữ liệu", "Nhập PassengerId:"))
+        while True:
+            passenger_id = int(simpledialog.askstring("Thêm dữ liệu", "Nhập PassengerId:"))
+            if passenger_id in data["PassengerId"].values:
+                    messagebox.showerror("Lỗi", "PassengerId đã tồn tại. Vui lòng nhập lại!")
+            else:
+                break
+                
         survived = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Survived (0 hoặc 1):"))
         pclass = int(simpledialog.askstring("Thêm dữ liệu", "Nhập Pclass (1, 2, 3):"))
         name = simpledialog.askstring("Thêm dữ liệu", "Nhập Name:")
