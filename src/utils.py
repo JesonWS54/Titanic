@@ -1,7 +1,7 @@
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
-FILEPATH = "duongdan/tenfile.csv"
+FILEPATH = "data/Titanic.csv"
 def load(filepath):
     try:
         return pd.read_csv(filepath)
@@ -9,7 +9,7 @@ def load(filepath):
         messagebox.showerror("Lỗi", f"Không thể tải dữ liệu: {e}")
         return pd.DataFrame()
 
-def save_data(data, filepath):
+def save(data, filepath):
     try:
         data.to_csv(filepath, index=False)
     except Exception as e:
@@ -34,7 +34,7 @@ def sort_data():
     def sort_by_column(column_name):
         try:
             data.sort_values(by=[column_name], ascending=True, inplace=True) # sắp
-            save_data(data, FILEPATH)
+            save(data, FILEPATH)
             messagebox.showinfo("Thông báo", f"Dữ liệu đã được sắp xếp theo '{column_name}' thành công!")
             sort_window.destroy()
         except Exception as e:

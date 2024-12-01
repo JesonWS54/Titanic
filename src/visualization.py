@@ -1,10 +1,11 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-
+from utils import load
+from utils import save
 
 
 file_path = 'data/Titanic.csv'
-titanic_data = pd.read_csv(file_path)
+titanic_data = load(file_path)
 
 # Biểu đồ phân phối tuổi (Histogram)
 
