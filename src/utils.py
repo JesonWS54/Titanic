@@ -2,16 +2,16 @@ import pandas as pd
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 FILEPATH = "data/Titanic.csv"
-def load(filepath):
+def load(FILEPATH):
     try:
-        return pd.read_csv(filepath)
+        return pd.read_csv(FILEPATH)
     except Exception as e:
         messagebox.showerror("Lỗi", f"Không thể tải dữ liệu: {e}")
         return pd.DataFrame()
 
-def save(data, filepath):
+def save(data, FILEPATH):
     try:
-        data.to_csv(filepath, index=False)
+        data.to_csv(FILEPATH, index=False)
     except Exception as e:
         messagebox.showerror("Lỗi", f"Không thể lưu dữ liệu: {e}")
 

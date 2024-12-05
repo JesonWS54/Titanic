@@ -6,13 +6,13 @@ from utils import save
 from utils import load
 FILEPATH = "data/Titanic.csv"
 # Load dữ liệu
-def load_data(filepath):
-    load(filepath)
+def load_data(FILEPATH):
+    load(FILEPATH)
 
 # data = load(FILEPATH)
 # # Lưu dữ liệu
-def save_data(data, filepath):
-    save(data, filepath)
+def save_data(data, FILEPATH):
+    save(data, FILEPATH)
 
 deleted_passenger_ids = []
 def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked):
@@ -60,6 +60,7 @@ def create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, pa
         return data, False
 
 def add(data):
+    add_window = tk.Toplevel()
     def submit_data(data):
         try:
             passenger_id = int(passenger_id_entry.get())
@@ -93,19 +94,17 @@ def add(data):
         
             data, success = create_entry(data, passenger_id, survived, pclass, name, sex, age, sibsp, parch, ticket, fare, cabin, embarked)
 
-        if success:
-            save_data(data, FILEPATH)
-            messagebox.showinfo("Thông báo", "Đã thêm hành khách mới.")
-            add_window.destroy()
-        else:
-            messagebox.showerror("Lỗi", "Có lỗi xảy ra khi thêm hành khách.")
-    except ValueError:
-        messagebox.showerror("Lỗi", "Vui lòng nhập đúng dữ liệu.")
-    except Exception as e:
-        messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
-    return data
-
-    add_window = tk.Toplevel()
+            if success:
+                save_data(data, FILEPATH)
+                messagebox.showinfo("Thông báo", "Đã thêm hành khách mới.")
+                add_window.destroy()
+            else:
+                messagebox.showerror("Lỗi", "Có lỗi xảy ra khi thêm hành khách.")
+        except ValueError:
+            messagebox.showerror("Lỗi", "Vui lòng nhập đúng dữ liệu.")
+        except Exception as e:
+            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
+            return data
     add_window.title("Thêm hành khách mới")
     add_window.geometry("900x900")
     
@@ -145,7 +144,6 @@ def add(data):
     tk.Label(add_window, text="Embarked:").pack(anchor="w")
     embarked_var = tk.StringVar(value="")
     ttk.Combobox(add_window, textvariable=embarked_var, values=["C", "Q", "S"], state="readonly").pack(fill="x")
-
     tk.Button(add_window, text="Thêm", command=lambda: submit_data(data)).pack(pady=10)
 
 
@@ -237,6 +235,20 @@ def update_entry(data, passenger_id,survival=None, pclass=None, name=None, sex=N
 
 def update(data):
     update_window = tk.Toplevel()
+    update_window.attributes("-fullscreen", True)
+    screen_width = update_window.winfo_screenwidth()
+    screen_height = update_window.winfo_screenheight()
+    exit_button = tk.Button(
+        update_window, 
+        text="Exit", 
+        command=update_window.destroy, 
+        font=("Arial", 10), 
+        bg="red", 
+        fg="white", 
+        width=8, 
+        height=1
+    )
+    exit_button.place(x=screen_width - 80, y=screen_height - 40)
     update_window.title("Cập nhật thông tin hành khách")
     update_window.geometry("900x900")
     def search_passenger():
@@ -273,7 +285,7 @@ def update(data):
         except ValueError:
             messagebox.showerror("Lỗi", "Vui lòng nhập ID hợp lệ.")
     
-       def update_passenger():
+    def update_passenger():
         try:
             passenger_id = int(entry_passenger_id.get())
             if passenger_id not in data["PassengerId"].values:
@@ -315,8 +327,7 @@ def update(data):
                 messagebox.showerror("Lỗi", "Hành khách không tồn tại.")
     
         except Exception as e:
-            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")
-            
+            messagebox.showerror("Lỗi hệ thống", f"Đã xảy ra lỗi: {e}")   
     tk.Label(update_window, text="Passenger ID:").pack(pady=2)
     entry_passenger_id = tk.Entry(update_window)
     entry_passenger_id.pack(pady=5)
@@ -366,7 +377,6 @@ def update(data):
     tk.Label(update_window, text="Embarked:").pack(pady=3)
     entry_embarked = tk.Entry(update_window)
     entry_embarked.pack(pady=5)
-
     tk.Button(update_window, text="Cập nhật", command=update_passenger).pack(pady=10)
 
 def delete_entry(data, passenger_id):
@@ -401,17 +411,15 @@ def delete(data):
         for item in tree.get_children():
             tree.delete(item)
         for _, row in data.iterrows():
-            tree.insert("", "end", values=(row["PassengerId"], row["Name"]))window = tk.Toplevel()
+            tree.insert("", "end", values=(row["PassengerId"], row["Name"]))
+            window = tk.Toplevel()
             
-    window.title("Xóa hành khách")
+        window.title("Xóa hành khách")
 
-    tree = ttk.Treeview(window, columns=("ID", "Name"), show="headings")
-    tree.heading("ID", text="Passenger ID")
-    tree.heading("Name", text="Name")
-    tree.pack(fill="both", expand=True)
-    refresh_treeview()
-    delete_button = tk.Button(window, text="Xóa", command=confirm_delete)
-    delete_button.pack(pady=10)
-
-
-
+        tree = ttk.Treeview(window, columns=("ID", "Name"), show="headings")
+        tree.heading("ID", text="Passenger ID")
+        tree.heading("Name", text="Name")
+        tree.pack(fill="both", expand=True)
+        refresh_treeview()
+        delete_button = tk.Button(window, text="Xóa", command=confirm_delete)
+        delete_button.pack(pady=10)

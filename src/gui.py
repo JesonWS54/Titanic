@@ -1,207 +1,306 @@
+import os
 import tkinter as tk
-from tkinter import ttk, messagebox, simpledialog
+from tkinter import ttk, messagebox
+from tkinter import *
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
-from data_cleaning import clean_data
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import visualization as vs
 import crud as ld
-from utils import load
-from utils import save
+from utils import load, save
+from data_cleaning import clean_data
+from PIL import ImageTk, Image
 
 # Đường dẫn tới file CSV
 FILEPATH = "data/Titanic.csv"
-
-# Load dữ liệu
-def load_data(filepath):
-    load(filepath)
-
 data = load(FILEPATH)
 
 # Lưu dữ liệu
 def save_data(data, filepath):
     save(data, filepath)
 
-# Hiển thị dữ liệu với phân trang
-def display_data():
-    global data
-    data_window = tk.Toplevel()
-    data_window.title("Hiển thị dữ liệu")
-    data_window.state('zoomed')
+# Giao diện chính
+class MainApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Phân tích dữ liệu Titanic")
+        self.state("zoomed")  # Mở ở chế độ toàn màn hình
 
-    frame = ttk.Frame(data_window)
-    frame.pack(fill=tk.BOTH, expand=True)
+        # Bố cục: Chia thành 3 phần
+        self.columnconfigure(0, weight=1)  # Phần bên trái (CHỨC NĂNG)
+        self.columnconfigure(1, weight=2)  # Phần giữa (TÙY CHỌN)
+        self.columnconfigure(2, weight=3)  # Phần bên phải (GIỚI THIỆU)
 
-    scrollbar_y = ttk.Scrollbar(frame, orient=tk.VERTICAL)
-    scrollbar_x = ttk.Scrollbar(frame, orient=tk.HORIZONTAL)
+        # Tiêu đề cho từng phần
+        self.create_headers()
 
-    tree = ttk.Treeview(
-        frame, columns=list(data.columns), show="headings",
-        yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set
-    )
-    scrollbar_y.config(command=tree.yview)
-    scrollbar_x.config(command=tree.xview)
+        # Menu bên trái
+        self.create_left_menu()
 
-    tree.grid(row=0, column=0, sticky='nsew')
-    scrollbar_y.grid(row=0, column=1, sticky='ns')
-    scrollbar_x.grid(row=1, column=0, sticky='ew')
+        # Khung giữa và bên phải
+        self.center_frame = tk.Frame(self, bg="#A9A9A9")  # Màu xám đậm cho bảng TÙY CHỌN
+        self.center_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
-    frame.rowconfigure(0, weight=1)
-    frame.columnconfigure(0, weight=1)
+        self.right_frame = tk.Frame(self, bg="white")  # Giữ màu trắng cho bảng GIỚI THIỆU
+        self.right_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
 
-    for col in data.columns:
-        tree.heading(col, text=col)
-        tree.column(col, width=100)
+        # Hiển thị nội dung giới thiệu mặc định
+        self.show_intro()
+    def display_chart(self, chart_function):
+        """Hiển thị biểu đồ bên phải."""
+        for widget in self.right_frame.winfo_children():
+            widget.destroy()
+        self.show_intro()  # Giữ phần giới thiệu
 
-    records_per_page = 30
-    total_pages = (len(data) + records_per_page - 1) // records_per_page
-    current_page = tk.IntVar(value=1)
-    page_info = tk.StringVar()
+        # Vẽ biểu đồ
+        fig = chart_function(data)
+        canvas = FigureCanvasTkAgg(fig, master=self.right_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+    def create_headers(self):
+        """Tạo tiêu đề cho từng phần."""
+        header_left = tk.Label(self, text="CHỨC NĂNG", font=("Arial", 14, "bold"), anchor="center", bg="#4B0082", fg="white")
+        header_left.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 
-    def load_page(page):
-        tree.delete(*tree.get_children())
-        start = (page - 1) * records_per_page
-        end = min(start + records_per_page, len(data))
-        for _, row in data.iloc[start:end].iterrows():
-            tree.insert("", tk.END, values=list(row))
-        page_info.set(f"Trang {page}/{total_pages}")
+        header_center = tk.Label(self, text="TÙY CHỌN", font=("Arial", 14, "bold"), anchor="center", bg="#808080", fg="white")
+        header_center.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
-    def prev_page():
-        if current_page.get() > 1:
-            current_page.set(current_page.get() - 1)
-            load_page(current_page.get())
+        header_right = tk.Label(self, text="GIỚI THIỆU", font=("Arial", 14, "bold"), anchor="center", bg="white")
+        header_right.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
 
-    def next_page():
-        if current_page.get() < total_pages:
-            current_page.set(current_page.get() + 1)
-            load_page(current_page.get())
+    def create_left_menu(self):
+        """Tạo menu chức năng bên trái."""
+        left_menu = tk.Frame(self, bg="#4B0082")  # Màu tím đậm cho bảng CHỨC NĂNG
+        left_menu.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
-    nav_frame = ttk.Frame(data_window)
-    nav_frame.pack(fill=tk.X, side=tk.BOTTOM)
+        # Các nút chức năng căn đều
+        ttk.Button(left_menu, text="Hiển thị dữ liệu", command=self.display_data).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Trực quan hóa dữ liệu", command=self.show_visualization_options).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Sắp xếp dữ liệu", command=self.show_sort_options).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Chức năng CRUD", command=self.show_crud_options).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Làm sạch dữ liệu", command=self.clean_data).pack(fill=tk.X, pady=5)
 
-    ttk.Button(nav_frame, text="Trang trước", command=prev_page).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Label(nav_frame, textvariable=page_info).pack(side=tk.LEFT, padx=5, pady=5)
-    ttk.Button(nav_frame, text="Trang tiếp", command=next_page).pack(side=tk.LEFT, padx=5, pady=5)
+    def show_intro(self):
+        """Hiển thị giới thiệu bên phải."""
+        for widget in self.right_frame.winfo_children():
+            widget.destroy()
 
-    load_page(current_page.get())
+        intro_label = tk.Label(
+            self.right_frame,
+            text="Giới thiệu về tập dữ liệu Titanic",
+            font=("Arial", 14, "bold"),
+            anchor="center",
+            bg="white",
+        )
+        intro_label.pack(pady=10)
 
-# Chức năng CRUD
-def crud_interface():
-    global data
-    def add_passenger():
-        global data
-        data = ld.add(data)
+        tk.Label(
+            self.right_frame,
+            text=(
+                "Tập dữ liệu Titanic chứa thông tin về hành khách trên con tàu Titanic huyền thoại, "
+                "bao gồm các đặc điểm như giới tính, độ tuổi, tầng lớp xã hội và tình trạng sống sót. "
+                "Phân tích dữ liệu này giúp làm sáng tỏ các yếu tố ảnh hưởng đến khả năng sống sót, "
+                "đồng thời cung cấp góc nhìn khoa học về sự kiện lịch sử nổi tiếng này."
+            ),
+            wraplength=500,
+            justify="left",
+            bg="white",
+        ).pack(pady=10)
+    def __init__(self):
+        super().__init__()
+        self.title("Phân tích dữ liệu Titanic")
+        self.state("zoomed")  
 
-    def read_passenger():
-        global data
-        ld.read(data)
+        self.columnconfigure(0, weight=1)  
+        self.columnconfigure(1, weight=2)  
+        self.columnconfigure(2, weight=3)  
 
-    def update_passenger():
-        global data
-        ld.update(data)
+        self.create_headers()
+        self.create_left_menu()
 
-    def delete_passenger():
-        global data
-        data = ld.delete(data)
+        self.center_frame = tk.Frame(self, bg="#A9A9A9")  
+        self.center_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
-    crud_window = tk.Toplevel()
-    crud_window.title("Chức năng CRUD")
-    crud_window.geometry("400x300")
+        self.right_frame = tk.Frame(self, bg="white")  
+        self.right_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
 
-    ttk.Button(crud_window, text="Thêm", command=add_passenger).pack(pady=5)
-    ttk.Button(crud_window, text="Đọc", command=read_passenger).pack(pady=5)
-    ttk.Button(crud_window, text="Cập nhật", command=update_passenger).pack(pady=5)
-    ttk.Button(crud_window, text="Xóa", command=delete_passenger).pack(pady=5)
+        self.show_intro()
 
-# Làm sạch dữ liệu
-def clean_data_interface():
-    global data
-    clean_data(data)
-    save_data(data, FILEPATH)
-    messagebox.showinfo("Thông báo", "Dữ liệu đã được làm sạch.")
+    def display_chart(self, chart_function):
+        for widget in self.right_frame.winfo_children():
+            widget.destroy()
+        
+        self.show_intro()  
 
-# Trực quan hóa dữ liệu
-def visualize_data_interface():
-    global data
+        fig = chart_function(data)
+        canvas = FigureCanvasTkAgg(fig, master=self.right_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-    viz_window = tk.Toplevel()
-    viz_window.title("Trực quan hóa dữ liệu")
+    def create_headers(self):
+        header_left = tk.Label(self, text="CHỨC NĂNG", font=("Arial", 14, "bold"), anchor="center", bg="#4B0082", fg="white")
+        header_left.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 
-    window_width = 600
-    window_height = 500
+        header_center = tk.Label(self, text="TÙY CHỌN", font=("Arial", 14, "bold"), anchor="center", bg="#808080", fg="white")
+        header_center.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
-    screen_width = viz_window.winfo_screenwidth()
-    screen_height = viz_window.winfo_screenheight()
+        header_right = tk.Label(self, text="GIỚI THIỆU", font=("Arial", 14, "bold"), anchor="center", bg="white")
+        header_right.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
 
-    position_x = (screen_width - window_width) // 2
-    position_y = (screen_height - window_height) // 2
+    def create_left_menu(self):
+        left_menu = tk.Frame(self, bg="#4B0082")  
+        left_menu.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
-    viz_window.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
+        ttk.Button(left_menu, text="Hiển thị dữ liệu", command=self.display_data).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Trực quan hóa dữ liệu", command=self.show_visualization_options).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Sắp xếp dữ liệu", command=self.show_sort_options).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Chức năng CRUD", command=self.show_crud_options).pack(fill=tk.X, pady=5)
+        ttk.Button(left_menu, text="Làm sạch dữ liệu", command=self.clean_data).pack(fill=tk.X, pady=5)
 
-    ttk.Button(viz_window, text="Biểu đồ phân phối tuổi", command=lambda: vs.Histogram(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Tỷ lệ sống sót theo giới tính", command=lambda: vs.Barchartsurvival(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Tỷ lệ sống sót theo tầng lớp vé", command=lambda: vs.Barchartticket(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Tỷ lệ sống sót theo tầng lớp vé và giới tính", command=lambda: vs.BarChartGenderSurvival(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Biểu đồ số lượng người sống sót theo giá vé", command=lambda: vs.FareSurvivalmain(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Biểu đồ số lượng người sống sót theo tuổi", command=lambda: vs.SurvivalByAge(data)).pack(pady=10)
-    ttk.Button(viz_window, text="Biểu đồ số lượng người sống sót theo tuổi và giới tính", command=lambda: vs.AgeGenderSurvival(data)).pack(pady=10)
+    def show_intro(self):
+        for widget in self.right_frame.winfo_children():
+            widget.destroy()
 
+        intro_label = tk.Label(
+            self.right_frame,
+            text="Giới thiệu về tập dữ liệu Titanic",
+            font=("Arial", 14, "bold"),
+            anchor="center",
+            bg="white",
+        )
+        intro_label.pack(pady=10)
+        tk.Label(
+            self.right_frame,
+            text=(
+                "Tập dữ liệu Titanic chứa thông tin về hành khách trên con tàu Titanic huyền thoại, "
+                "bao gồm các đặc điểm như giới tính, độ tuổi, tầng lớp xã hội và tình trạng sống sót. "
+                "Phân tích dữ liệu này giúp làm sáng tỏ các yếu tố ảnh hưởng đến khả năng sống sót, "
+                "đồng thời cung cấp góc nhìn khoa học về sự kiện lịch sử nổi tiếng này."
+            ),
+            wraplength=500,
+            justify="left",
+            bg="white",
+        ).pack(pady=10)
+        file_path = r'C:\Dictionary\titanic_image.jpg'  # Đảm bảo đường dẫn đúng với file ảnh của bạn
+        if not os.path.exists(file_path):
+            print(f"File {file_path} không tồn tại.")
+        else:
+            print(f"File {file_path} tồn tại.")
 
-# Hàm sắp xếp dữ liệu (tùy chọn cột)
-def sort_data():
-    global data
-    if data.empty:
-        messagebox.showerror("Lỗi", "Dữ liệu trống. Không thể sắp xếp.")
-        return
-    allowed_columns = ['PassengerId', 'Age', 'Name']  
-    available_columns = [col for col in allowed_columns if col in data.columns]
+            # Mở và hiển thị ảnh
+            img_import = Image.open(file_path)  # Mở ảnh bằng Pillow
+            resize = img_import.resize((300, 300), Image.LANCZOS)  # Resize ảnh
+            img = ImageTk.PhotoImage(resize)
 
-    if not available_columns:
-        messagebox.showerror("Lỗi", "Không có cột hợp lệ để sắp xếp.")
-        return
+            # Tạo nút với ảnh
+            label_img = tk.Label(self.right_frame, image=img)
+            label_img.image = img  # Lưu tham chiếu ảnh
+            label_img.pack(pady=10)
+    def display_data(self):
+        def load_page(page):
+            tree.delete(*tree.get_children())
+            start = (page - 1) * records_per_page
+            end = min(start + records_per_page, len(data))
+            for _, row in data.iloc[start:end].iterrows():
+                tree.insert("", tk.END, values=list(row))
+            page_info.set(f"Trang {page}/{total_pages}")
 
-    sort_window = tk.Toplevel()
-    sort_window.title("Sắp xếp dữ liệu")
+        def prev_page():
+            if current_page.get() > 1:
+                current_page.set(current_page.get() - 1)
+                load_page(current_page.get())
 
-    def sort_by_column(column_name):
+        def next_page():
+            if current_page.get() < total_pages:
+                current_page.set(current_page.get() + 1)
+                load_page(current_page.get())
+
+        data_window = tk.Toplevel(self)
+        data_window.title("Hiển thị dữ liệu")
+        data_window.state("zoomed")
+
+        records_per_page = 30
+        total_pages = (len(data) + records_per_page - 1) // records_per_page
+        current_page = tk.IntVar(value=1)
+        page_info = tk.StringVar()
+
+        tree = ttk.Treeview(data_window, columns=list(data.columns), show="headings")
+        tree.pack(fill=tk.BOTH, expand=True)
+
+        for col in data.columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=100)
+
+        nav_frame = ttk.Frame(data_window)
+        nav_frame.pack(fill=tk.X, side=tk.BOTTOM)
+
+        ttk.Button(nav_frame, text="Trang trước", command=prev_page).pack(side=tk.LEFT, padx=5, pady=5)
+        ttk.Label(nav_frame, textvariable=page_info).pack(side=tk.LEFT, padx=5, pady=5)
+        ttk.Button(nav_frame, text="Trang tiếp", command=next_page).pack(side=tk.LEFT, padx=5, pady=5)
+
+        load_page(current_page.get())
+
+    def show_crud_options(self):
+        for widget in self.center_frame.winfo_children():
+            widget.destroy()
+
+        ttk.Button(self.center_frame, text="Thêm", command=self.add_passenger).pack(fill=tk.X, pady=5)
+        ttk.Button(self.center_frame, text="Đọc", command=self.read_passenger).pack(fill=tk.X, pady=5)
+        ttk.Button(self.center_frame, text="Cập nhật", command=self.update_passenger).pack(fill=tk.X, pady=5)
+        ttk.Button(self.center_frame, text="Xóa", command=self.delete_passenger).pack(fill=tk.X, pady=5)
+
+    def show_visualization_options(self):
+        for widget in self.center_frame.winfo_children():
+            widget.destroy() 
+        options = [
+            ("Phân phối tuổi", vs.Histogram),
+            ("Tỷ lệ sống sót theo giới tính", vs.Barchartsurvival),
+            ("Tỷ lệ sống sót theo tầng lớp vé", vs.Barchartticket),
+            ("Tỷ lệ sống sót theo tầng lớp vé và giới tính", vs.BarChartGenderSurvival),
+            ("Biểu đồ thể hiện số lượng người sống sót theo giá vé", vs.FareSurvivalmain),
+            ("Biểu đồ thể hiện số lượng người sống sót theo tuổi", vs.SurvivalByAge),
+            ("Biểu đồ thể hiện số lượng người sống sót theo tuổi và giới tính", vs.AgeGenderSurvival),
+        ]
+
+        for text, func in options:
+            ttk.Button(self.center_frame, text=text, command=lambda f=func: self.display_chart(f)).pack(fill=tk.X, pady=5)
+
+    def show_sort_options(self):
+        """Hiển thị các tùy chọn sắp xếp dữ liệu."""
+        for widget in self.center_frame.winfo_children():
+            widget.destroy()
+
+        ttk.Button(self.center_frame, text="Sắp xếp theo PassengerId", command=lambda: self.sort_data('PassengerId')).pack(fill=tk.X, pady=5)
+        ttk.Button(self.center_frame, text="Sắp xếp theo Age", command=lambda: self.sort_data('Age')).pack(fill=tk.X, pady=5)
+        ttk.Button(self.center_frame, text="Sắp xếp theo Name", command=lambda: self.sort_data('Name')).pack(fill=tk.X, pady=5)
+
+    def sort_data(self, column_name):
         try:
-            data.sort_values(by=[column_name], ascending=True, inplace=True) # sắp
+            data.sort_values(by=[column_name], ascending=True, inplace=True)  # Sắp xếp dữ liệu
             save_data(data, FILEPATH)
             messagebox.showinfo("Thông báo", f"Dữ liệu đã được sắp xếp theo '{column_name}' thành công!")
-            sort_window.destroy()
         except Exception as e:
             messagebox.showerror("Lỗi", f"Không thể sắp xếp dữ liệu: {e}")
 
-    # Giao diện chọn cột để sắp xếp
-    ttk.Label(sort_window, text="Chọn cột để sắp xếp:").pack(pady=10)
-    for column in available_columns:
-        ttk.Button(sort_window, text=f"Sắp xếp theo {column}", 
-                   command=lambda col=column: sort_by_column(col)).pack(pady=5)
+    def add_passenger(self):
+        ld.add(data)
 
-    sort_window.mainloop()
+    def read_passenger(self):
+        ld.read(data)
 
-# Giao diện chính
-def main_gui():
-    root = tk.Tk()
-    root.title("Chương trình phân tích dữ liệu Titanic")
+    def update_passenger(self):
+        ld.update(data)
 
-    window_width = 400
-    window_height = 350
+    def delete_passenger(self):
+        ld.delete(data)
 
-    screen_width = root.winfo_screenwidth()
-    screen_height = root.winfo_screenheight()
+    def clean_data(self):
+        global data
+        clean_data(data)
+        save_data(data, FILEPATH)
+        messagebox.showinfo("Thông báo", "Dữ liệu đã được làm sạch.")
 
-    position_x = (screen_width - window_width) // 2
-    position_y = (screen_height - window_height) // 2
-
-    root.geometry(f"{window_width}x{window_height}+{position_x}+{position_y}")
-    ttk.Button(root, text="Hiển thị dữ liệu", command=display_data).pack(pady=10)
-    ttk.Button(root, text="Làm sạch dữ liệu", command=clean_data_interface).pack(pady=10)
-    ttk.Button(root, text="Chức năng CRUD", command=crud_interface).pack(pady=10)
-    ttk.Button(root, text="Trực quan hóa dữ liệu", command=visualize_data_interface).pack(pady=10)
-    ttk.Button(root, text="Sắp xếp dữ liệu", command=sort_data).pack(pady=10)
-
-    root.mainloop()
-
+# Chạy chương trình
 if __name__ == "__main__":
-    main_gui()
+    app = MainApp()
+    app.mainloop()
