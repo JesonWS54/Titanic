@@ -181,7 +181,7 @@ class MainApp(tk.Tk):
             justify="left",
             bg="white",
         ).pack(pady=10)
-        file_path = r'C:\Dictionary\titanic_image.jpg'  # Đảm bảo đường dẫn đúng với file ảnh của bạn
+        file_path = r'C:\Titanic\titanic_image.jpg'  # Đảm bảo đường dẫn đúng với file ảnh của bạn
         if not os.path.exists(file_path):
             print(f"File {file_path} không tồn tại.")
         else:
