@@ -412,14 +412,12 @@ def delete(data):
             tree.delete(item)
         for _, row in data.iterrows():
             tree.insert("", "end", values=(row["PassengerId"], row["Name"]))
-            window = tk.Toplevel()
-            
-        window.title("Xóa hành khách")
-
-        tree = ttk.Treeview(window, columns=("ID", "Name"), show="headings")
-        tree.heading("ID", text="Passenger ID")
-        tree.heading("Name", text="Name")
-        tree.pack(fill="both", expand=True)
-        refresh_treeview()
-        delete_button = tk.Button(window, text="Xóa", command=confirm_delete)
-        delete_button.pack(pady=10)
+    window = tk.Toplevel()
+    window.title("Xóa hành khách")
+    tree = ttk.Treeview(window, columns=("ID", "Name"), show="headings")
+    tree.heading("ID", text="Passenger ID")
+    tree.heading("Name", text="Name")
+    tree.pack(fill="both", expand=True)
+    refresh_treeview()
+    delete_button = tk.Button(window, text="Xóa", command=confirm_delete)
+    delete_button.pack(pady=10)
