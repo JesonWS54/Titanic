@@ -9,7 +9,9 @@ import visualization as vs
 import crud as ld
 from utils import load, save
 from data_cleaning import clean_data
-from PIL import ImageTk, Image
+import customtkinter as ctk
+from PIL import Image, ImageTk  # Giữ nguyên để xử lý ảnh
+
 
 # Đường dẫn tới file CSV
 FILEPATH = "data/Titanic.csv"
@@ -20,16 +22,16 @@ def save_data(data, filepath):
     save(data, filepath)
 
 # Giao diện chính
-class MainApp(tk.Tk):
+class MainApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Phân tích dữ liệu Titanic")
         self.state("zoomed")  # Mở ở chế độ toàn màn hình
 
         # Bố cục: Chia thành 3 phần
-        self.columnconfigure(0, weight=1)  # Phần bên trái (CHỨC NĂNG)
-        self.columnconfigure(1, weight=2)  # Phần giữa (TÙY CHỌN)
-        self.columnconfigure(2, weight=3)  # Phần bên phải (GIỚI THIỆU)
+        self.grid_columnconfigure(0, weight=1)  # Phần bên trái (CHỨC NĂNG)
+        self.grid_columnconfigure(1, weight=2)  # Phần giữa (TÙY CHỌN)
+        self.grid_columnconfigure(2, weight=3)  # Phần bên phải (GIỚI THIỆU)
 
         # Tiêu đề cho từng phần
         self.create_headers()
@@ -38,10 +40,10 @@ class MainApp(tk.Tk):
         self.create_left_menu()
 
         # Khung giữa và bên phải
-        self.center_frame = tk.Frame(self, bg="#A9A9A9")  # Màu xám đậm cho bảng TÙY CHỌN
+        self.center_frame = ctk.CTkFrame(self, fg_color="#A9A9A9") # Màu xám đậm cho bảng TÙY CHỌN
         self.center_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
 
-        self.right_frame = tk.Frame(self, bg="white")  # Giữ màu trắng cho bảng GIỚI THIỆU
+        self.right_frame = ctk.CTkFrame(self, fg_color="white")  # Giữ màu trắng cho bảng GIỚI THIỆU
         self.right_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
 
         # Hiển thị nội dung giới thiệu mặc định
@@ -57,28 +59,29 @@ class MainApp(tk.Tk):
         canvas = FigureCanvasTkAgg(fig, master=self.right_frame)
         canvas.draw()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
     def create_headers(self):
         """Tạo tiêu đề cho từng phần."""
-        header_left = tk.Label(self, text="CHỨC NĂNG", font=("Arial", 14, "bold"), anchor="center", bg="#4B0082", fg="white")
+        header_left = ctk.CTkLabel(self, text="CHỨC NĂNG", font=("Arial", 16, "bold"), anchor="center", bg="#4B0082", fg="white")
         header_left.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
 
-        header_center = tk.Label(self, text="TÙY CHỌN", font=("Arial", 14, "bold"), anchor="center", bg="#808080", fg="white")
+        header_center = ctk.CTkLabel(self, text="TÙY CHỌN", font=("Arial", 16, "bold"), anchor="center", bg="#808080", fg="white")
         header_center.grid(row=0, column=1, sticky="ew", padx=5, pady=5)
 
-        header_right = tk.Label(self, text="GIỚI THIỆU", font=("Arial", 14, "bold"), anchor="center", bg="white")
+        header_right = ctk.CTkLabel(self, text="GIỚI THIỆU", font=("Arial", 16, "bold"), anchor="center", bg="white")
         header_right.grid(row=0, column=2, sticky="ew", padx=5, pady=5)
 
     def create_left_menu(self):
         """Tạo menu chức năng bên trái."""
-        left_menu = tk.Frame(self, bg="#4B0082")  # Màu tím đậm cho bảng CHỨC NĂNG
+        left_menu = ctk.CTkFrame(self, bg="#4B0082")  # Màu tím đậm cho bảng CHỨC NĂNG
         left_menu.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         # Các nút chức năng căn đều
-        ttk.Button(left_menu, text="Hiển thị dữ liệu", command=self.display_data).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Trực quan hóa dữ liệu", command=self.show_visualization_options).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Sắp xếp dữ liệu", command=self.show_sort_options).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Chức năng CRUD", command=self.show_crud_options).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Làm sạch dữ liệu", command=self.clean_data).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(left_menu, text="Hiển thị dữ liệu", command=self.display_data).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(left_menu, text="Trực quan hóa dữ liệu", command=self.show_visualization_options).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(left_menu, text="Sắp xếp dữ liệu", command=self.show_sort_options).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(left_menu, text="Chức năng CRUD", command=self.show_crud_options).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(left_menu, text="Làm sạch dữ liệu", command=self.clean_data).pack(fill=tk.X, pady=5)
 
     def show_intro(self):
         """Hiển thị giới thiệu bên phải."""
@@ -151,11 +154,11 @@ class MainApp(tk.Tk):
         left_menu = tk.Frame(self, bg="#4B0082")  
         left_menu.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
-        ttk.Button(left_menu, text="Hiển thị dữ liệu", command=self.display_data).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Trực quan hóa dữ liệu", command=self.show_visualization_options).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Sắp xếp dữ liệu", command=self.show_sort_options).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Chức năng CRUD", command=self.show_crud_options).pack(fill=tk.X, pady=5)
-        ttk.Button(left_menu, text="Làm sạch dữ liệu", command=self.clean_data).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(left_menu, text="Hiển thị dữ liệu", command=self.display_data).pack(fill="x", pady=5)
+        ctk.CTkButton(left_menu, text="Trực quan hóa dữ liệu", command=self.show_visualization_options).pack(fill="x", pady=5)
+        ctk.CTkButton(left_menu, text="Sắp xếp dữ liệu", command=self.show_sort_options).pack(fill="x", pady=5)
+        ctk.CTkButton(left_menu, text="Chức năng CRUD", command=self.show_crud_options).pack(fill="x", pady=5)
+        ctk.CTkButton(left_menu, text="Làm sạch dữ liệu", command=self.clean_data).pack(fill="x", pady=5)
 
     def show_intro(self):
         for widget in self.right_frame.winfo_children():
@@ -231,12 +234,12 @@ class MainApp(tk.Tk):
             tree.heading(col, text=col)
             tree.column(col, width=100)
 
-        nav_frame = ttk.Frame(data_window)
+        nav_frame = ctk.CTkFrame(data_window)
         nav_frame.pack(fill=tk.X, side=tk.BOTTOM)
 
-        ttk.Button(nav_frame, text="Trang trước", command=prev_page).pack(side=tk.LEFT, padx=5, pady=5)
-        ttk.Label(nav_frame, textvariable=page_info).pack(side=tk.LEFT, padx=5, pady=5)
-        ttk.Button(nav_frame, text="Trang tiếp", command=next_page).pack(side=tk.LEFT, padx=5, pady=5)
+        ctk.CTkButton(nav_frame, text="Trang trước", command=prev_page).pack(side=tk.LEFT, padx=5, pady=5)
+        tk.Label(nav_frame, textvariable=page_info).pack(side=tk.LEFT, padx=5, pady=5)
+        ctk.CTkButton(nav_frame, text="Trang tiếp", command=next_page).pack(side=tk.LEFT, padx=5, pady=5)
 
         load_page(current_page.get())
 
@@ -244,10 +247,10 @@ class MainApp(tk.Tk):
         for widget in self.center_frame.winfo_children():
             widget.destroy()
 
-        ttk.Button(self.center_frame, text="Thêm", command=self.add_passenger).pack(fill=tk.X, pady=5)
-        ttk.Button(self.center_frame, text="Đọc", command=self.read_passenger).pack(fill=tk.X, pady=5)
-        ttk.Button(self.center_frame, text="Cập nhật", command=self.update_passenger).pack(fill=tk.X, pady=5)
-        ttk.Button(self.center_frame, text="Xóa", command=self.delete_passenger).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Thêm", command=self.add_passenger).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Đọc", command=self.read_passenger).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Cập nhật", command=self.update_passenger).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Xóa", command=self.delete_passenger).pack(fill=tk.X, pady=5)
 
     def show_visualization_options(self):
         for widget in self.center_frame.winfo_children():
@@ -263,16 +266,16 @@ class MainApp(tk.Tk):
         ]
 
         for text, func in options:
-            ttk.Button(self.center_frame, text=text, command=lambda f=func: self.display_chart(f)).pack(fill=tk.X, pady=5)
+            ctk.CTkButton(self.center_frame, text=text, command=lambda f=func: self.display_chart(f)).pack(fill=tk.X, pady=5)
 
     def show_sort_options(self):
         """Hiển thị các tùy chọn sắp xếp dữ liệu."""
         for widget in self.center_frame.winfo_children():
             widget.destroy()
 
-        ttk.Button(self.center_frame, text="Sắp xếp theo PassengerId", command=lambda: self.sort_data('PassengerId')).pack(fill=tk.X, pady=5)
-        ttk.Button(self.center_frame, text="Sắp xếp theo Age", command=lambda: self.sort_data('Age')).pack(fill=tk.X, pady=5)
-        ttk.Button(self.center_frame, text="Sắp xếp theo Name", command=lambda: self.sort_data('Name')).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Sắp xếp theo PassengerId", command=lambda: self.sort_data('PassengerId')).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Sắp xếp theo Age", command=lambda: self.sort_data('Age')).pack(fill=tk.X, pady=5)
+        ctk.CTkButton(self.center_frame, text="Sắp xếp theo Name", command=lambda: self.sort_data('Name')).pack(fill=tk.X, pady=5)
 
     def sort_data(self, column_name):
         try:
