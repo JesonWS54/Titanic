@@ -7,6 +7,6 @@
 ------------THÔNG TIN NHÓM----------------
 1. HỌ TÊN SINH VIÊN TRƯỞNG NHÓM: Nguyễn Thanh Khang - 0383775262 - nguyenthanhkhang600@gmail.com
 2. HỌ TÊN SINH VIÊN 2 (mã số sinh viên 2): Lâm Văn Dỉ (23110191)
-4. HỌ TÊN SINH VIÊN 2 (mã số sinh viên 3): Huỳnh Tấn Vinh (23110365)
-5. HỌ TÊN SINH VIÊN 2 (mã số sinh viên 4): Nguyễn Lâm Tấn (23110365)
-6. HỌ TÊN SINH VIÊN 2 (mã số sinh viên 5): Võ Hữu Tín (23110343)
+4. HỌ TÊN SINH VIÊN 3 (mã số sinh viên 3): Huỳnh Tấn Vinh (23110365)
+5. HỌ TÊN SINH VIÊN 4 (mã số sinh viên 4): Nguyễn Lâm Tấn (23110365)
+6. HỌ TÊN SINH VIÊN 5 (mã số sinh viên 5): Võ Hữu Tín (23110343)
